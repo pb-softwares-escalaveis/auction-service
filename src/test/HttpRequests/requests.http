@@ -1,0 +1,185 @@
+### Variáveis Globais
+@baseUrl = http://localhost:8080
+# id usuarios 1, 2 validos | 666 bloqueado
+
+---
+### criar anuncio usuario 1
+
+POST {{baseUrl}}/auctions/create
+X-User-Id: 1
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{
+  "name": "Pen Drive de Barata 12KB",
+  "description": "Sobrevive ao apocalipse nuclear muito novo",
+  "category": "ELECTRONICS",
+  "initialBidPrice": 10.00,
+  "buyNowPrice": 200.00,
+  "durationInDays": 3
+}
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="pen_drive_barata.jpg"
+Content-Type: image/jpeg
+
+< ./images/pen_drive_barata.jpg
+--WebAppBoundary--
+
+### criar  anuncio usuario 1 sem buyNowPrice
+
+POST {{baseUrl}}/auctions/create
+X-User-Id: 1
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{
+  "name": "Olhos Escarlate",
+  "description": "Removidos de vítimas do massacre ao clã Kurta pela Troupe Fantasma.",
+  "initialBidPrice": 100000.00,
+  "category": "COLLECTIBLES_AND_ART",
+  "durationInDays": 7
+}
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="olhos-escarlate.jpg"
+Content-Type: image/jpeg
+
+< ./images/olhos-escarlate.jpg
+--WebAppBoundary--
+
+### criar anuncio com usuario 2 e sem buyNowPrice
+
+POST {{baseUrl}}/auctions/create
+X-User-Id: 2
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{
+	"name": "LP Leno Brega 1989",
+	"description": "LP DISCO DE VINIL LENO BREGA - VOLUME 2, BOM ESTADO GERAL!!!",
+	"initialBidPrice": 200.00,
+	"category": "MUSIC",
+	"durationInDays": 7
+}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="./images/leno.jpg"
+Content-Type: image/jpeg
+
+< ./images/leno.jpg
+--WebAppBoundary--
+
+### criar anuncio com usuario 2
+
+POST {{baseUrl}}/auctions/create
+X-User-Id: 2
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{
+	"name": "Bíblia Sagrada",
+	"description": "Em bom estado 152 paginas",
+	"initialBidPrice": 20.00,
+	"category": "BOOKS",
+	"durationInDays": 4
+}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="./images/biblia-sagrada.jpg"
+Content-Type: image/jpeg
+
+< ./images/biblia-sagrada.jpg
+--WebAppBoundary--
+
+### anuncio com usuario bloqueado
+
+POST {{baseUrl}}/auctions/create
+X-User-Id: 2
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{
+  "name": "Produto do Usuário Bloqueado",
+  "description": "Não deve ser salvo",
+  "initialBidPrice": 100.00,
+  "category": "OTHER",
+  "durationInDays": 3
+}
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="leno.jpg"
+Content-Type: image/jpeg
+
+< ./images/leno.jpg
+--WebAppBoundary--
+
+### listar todos
+
+GET {{baseUrl}}/auctions
+
+
+### buscar um
+
+GET {{baseUrl}}/auctions/1
+
+
+### dar lance no proprio anuncio
+
+POST {{baseUrl}}/auctions/1/bids
+X-User-Id: 1
+Content-Type: application/json
+
+{
+  "amount": 1000.00
+}
+
+
+### dar lance valido
+
+POST {{baseUrl}}/auctions/1/bids
+X-User-Id: 3
+Content-Type: application/json
+
+{
+  "amount": 1000.00
+}
+
+
+### dar lance abaixo de 5%
+
+POST {{baseUrl}}/auctions/1/bids
+X-User-Id: 4
+Content-Type: application/json
+
+{
+  "amount": 1001.00
+}
+
+### dar lance valido com arremate
+
+POST {{baseUrl}}/auctions/1/bids
+X-User-Id: 3
+Content-Type: application/json
+
+{
+  "amount": 5000.00
+}
+
+
+### dono remove o anuncio
+
+DELETE {{baseUrl}}/auctions/1
+X-User-Id: 1
