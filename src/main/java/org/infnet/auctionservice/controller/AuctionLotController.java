@@ -1,9 +1,10 @@
-package org.infnet.auctionservice.Controller;
+package org.infnet.auctionservice.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.infnet.auctionservice.Service.AuctionLotService;
+import org.infnet.auctionservice.service.AuctionLotService;
 import org.infnet.auctionservice.dto.AuctionLotRequest;
 import org.infnet.auctionservice.dto.AuctionLotResponse;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/auctions")
@@ -37,7 +40,7 @@ public class AuctionLotController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAuctionLot(
             @PathVariable("id") Long lotId,
-            @RequestHeader("X-User-Id") Long userId
+            @RequestHeader("X-User-Id") UUID userId
 
     ){
         lotService.deleteAuctionLot(userId, lotId);
@@ -46,9 +49,9 @@ public class AuctionLotController {
 
     @PostMapping(value = "/create", consumes = {"multipart/form-data"})
     public ResponseEntity<AuctionLotResponse> createAuctionLot(
-            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("X-User-Id") UUID userId,
             @Valid@RequestPart("data") AuctionLotRequest request,
-            @RequestPart("image") MultipartFile image
+            @NotNull @RequestPart("image") MultipartFile image
     ) throws Exception {
         return ResponseEntity.status(HttpStatus.CREATED).body(lotService.createAuctionLot(userId, request, image));
     }

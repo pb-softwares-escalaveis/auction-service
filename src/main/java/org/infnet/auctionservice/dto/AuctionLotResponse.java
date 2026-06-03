@@ -5,11 +5,12 @@ import org.infnet.auctionservice.enums.CategoryEnum;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 public record AuctionLotResponse(
         Long id,
-        Long sellerId,
-        String name,
+        UUID sellerId,
+        String title,
         String description,
         BigDecimal initialBidPrice,
         BigDecimal currentBidPrice,

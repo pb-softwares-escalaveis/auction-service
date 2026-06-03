@@ -1,12 +1,15 @@
 ### Variáveis Globais
 @baseUrl = http://localhost:8080
-# id usuarios 1, 2 validos | 666 bloqueado
+@user1 = bddfe29d-3bd1-47e5-bf4b-03a50c65d534
+@user2 = 51bd71ce-a60e-40cb-84ff-998688f9acdb
+#BLOQUEADO FAZ NADA
+@user3 = 64c58708-95cf-4859-aa16-bf1c6c880f7e
 
 ---
 ### criar anuncio usuario 1
 
 POST {{baseUrl}}/auctions/create
-X-User-Id: 1
+X-User-Id: {{user1}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
@@ -14,7 +17,7 @@ Content-Disposition: form-data; name="data"
 Content-Type: application/json
 
 {
-  "name": "Pen Drive de Barata 12KB",
+  "title": "Pen Drive de Barata 12KB",
   "description": "Sobrevive ao apocalipse nuclear muito novo",
   "category": "ELECTRONICS",
   "initialBidPrice": 10.00,
@@ -31,7 +34,7 @@ Content-Type: image/jpeg
 ### criar  anuncio usuario 1 sem buyNowPrice
 
 POST {{baseUrl}}/auctions/create
-X-User-Id: 1
+X-User-Id: {{user1}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
@@ -39,7 +42,7 @@ Content-Disposition: form-data; name="data"
 Content-Type: application/json
 
 {
-  "name": "Olhos Escarlate",
+  "title": "Olhos Escarlate",
   "description": "Removidos de vítimas do massacre ao clã Kurta pela Troupe Fantasma.",
   "initialBidPrice": 100000.00,
   "category": "COLLECTIBLES_AND_ART",
@@ -55,7 +58,7 @@ Content-Type: image/jpeg
 ### criar anuncio com usuario 2 e sem buyNowPrice
 
 POST {{baseUrl}}/auctions/create
-X-User-Id: 2
+X-User-Id: {{user2}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
@@ -63,7 +66,7 @@ Content-Disposition: form-data; name="data"
 Content-Type: application/json
 
 {
-	"name": "LP Leno Brega 1989",
+	"title": "LP Leno Brega 1989",
 	"description": "LP DISCO DE VINIL LENO BREGA - VOLUME 2, BOM ESTADO GERAL!!!",
 	"initialBidPrice": 200.00,
 	"category": "MUSIC",
@@ -80,7 +83,7 @@ Content-Type: image/jpeg
 ### criar anuncio com usuario 2
 
 POST {{baseUrl}}/auctions/create
-X-User-Id: 2
+X-User-Id: {{user2}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
@@ -88,7 +91,7 @@ Content-Disposition: form-data; name="data"
 Content-Type: application/json
 
 {
-	"name": "Bíblia Sagrada",
+	"title": "Bíblia Sagrada",
 	"description": "Em bom estado 152 paginas",
 	"initialBidPrice": 20.00,
 	"category": "BOOKS",
@@ -105,7 +108,7 @@ Content-Type: image/jpeg
 ### anuncio com usuario bloqueado
 
 POST {{baseUrl}}/auctions/create
-X-User-Id: 2
+X-User-Id: {{user3}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
@@ -113,7 +116,7 @@ Content-Disposition: form-data; name="data"
 Content-Type: application/json
 
 {
-  "name": "Produto do Usuário Bloqueado",
+  "title": "Produto do Usuário Bloqueado",
   "description": "Não deve ser salvo",
   "initialBidPrice": 100.00,
   "category": "OTHER",
@@ -139,7 +142,7 @@ GET {{baseUrl}}/auctions/1
 ### dar lance no proprio anuncio
 
 POST {{baseUrl}}/auctions/1/bids
-X-User-Id: 1
+X-User-Id: {{user1}}
 Content-Type: application/json
 
 {
@@ -150,7 +153,7 @@ Content-Type: application/json
 ### dar lance valido
 
 POST {{baseUrl}}/auctions/1/bids
-X-User-Id: 3
+X-User-Id: {{user3}}
 Content-Type: application/json
 
 {
@@ -161,7 +164,7 @@ Content-Type: application/json
 ### dar lance abaixo de 5%
 
 POST {{baseUrl}}/auctions/1/bids
-X-User-Id: 4
+X-User-Id: {{user2}}
 Content-Type: application/json
 
 {
@@ -171,7 +174,7 @@ Content-Type: application/json
 ### dar lance valido com arremate
 
 POST {{baseUrl}}/auctions/1/bids
-X-User-Id: 3
+X-User-Id: {{user3}}
 Content-Type: application/json
 
 {
@@ -182,4 +185,4 @@ Content-Type: application/json
 ### dono remove o anuncio
 
 DELETE {{baseUrl}}/auctions/1
-X-User-Id: 1
+X-User-Id: {{user1}}

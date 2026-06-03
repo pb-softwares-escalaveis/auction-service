@@ -18,6 +18,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+
   s3:
     endpoint: ${S3_ENDPOINT}
     bucket-name: ${S3_BUCKET_NAME}
@@ -25,5 +26,27 @@ spring:
     secret-key: ${S3_SECRET_KEY}
     region: ${S3_REGION}
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: auction-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      properties:
+        spring.json.trusted.packages: org.infnet.auctionservice.*
+
+app:
+  kafka-topics:
+      auction-created-pending: "auctions.lot.created-pending"
+      auction-approved: "auctions.lot.approved"
+      auction-rejected: "auctions.lot.rejected"
+      auction-ended-without-winner: "auctions.lot.ended-without-winner"
+      auction-ended-with-winner: "auctions.lot.ended-with-winner"
+      auction-clicked: "auctions.lot.clicked"
+      bid-placed: "auctions.bid.placed"
 
 

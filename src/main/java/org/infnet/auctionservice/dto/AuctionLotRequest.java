@@ -4,12 +4,11 @@ import jakarta.validation.constraints.*;
 import org.infnet.auctionservice.enums.CategoryEnum;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 
 public record AuctionLotRequest(
-        @NotBlank(message = "Nome é obrigatório")
-        @Size(max = 100, message = "O nome deve conter no máximo 100 caracteres")
-        String name,
+        @NotBlank(message = "Título é obrigatório")
+        @Size(max = 100, message = "O Título deve conter no máximo 100 caracteres")
+        String title,
         @NotBlank(message = "Descrição é obrigatória")
         String description,
         @NotNull(message = "Valor do lance inicial é obrigátorio")

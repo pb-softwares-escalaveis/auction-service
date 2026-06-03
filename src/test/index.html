@@ -80,9 +80,9 @@
     <div class="user-selector">
         <label for="globalUserId">Simulating as:</label>
         <select id="globalUserId">
-            <option value="1">User ID: 1 (Valid)</option>
-            <option value="2">User ID: 2 (Valid)</option>
-            <option value="666">User ID: 666 (Blocked)</option>
+            <option value="bddfe29d-3bd1-47e5-bf4b-03a50c65d534">Nicholas Puggian (Valid)</option>
+            <option value="51bd71ce-a60e-40cb-84ff-998688f9acdb">Guilherme Pirozi (Valid)</option>
+            <option value="64c58708-95cf-4859-aa16-bf1c6c880f7e">Jair Messias Bolsonaro (Blocked)</option>
         </select>
     </div>
 </nav>
@@ -153,6 +153,18 @@
 <script>
     const API_BASE_URL = 'http://localhost:8080';
 
+    // User ID to Name mapping from mock users
+    const userMap = {
+        'bddfe29d-3bd1-47e5-bf4b-03a50c65d534': 'Nicholas Puggian',
+        '51bd71ce-a60e-40cb-84ff-998688f9acdb': 'Guilherme Pirozi',
+        '64c58708-95cf-4859-aa16-bf1c6c880f7e': 'Jair Messias Bolsonaro'
+    };
+
+    // Helper: Get user name from UUID
+    function getUserName(userId) {
+        return userMap[userId] || userId;
+    }
+
     // Helper: Get the globally selected User ID
     function getActiveUserId() {
         return document.getElementById('globalUserId').value;
@@ -194,7 +206,7 @@
 
                             <div class="auction-meta">
                                 <span><strong>Category:</strong> ${auction.category.replace(/_/g, ' ')}</span>
-                                <span><strong>Seller ID:</strong> User ${auction.sellerId}</span>
+                                <span><strong>Seller:</strong> ${getUserName(auction.sellerId)}</span>
                                 <span><strong>Ends:</strong> ${formatDate(auction.expirationDate)}</span>
                             </div>
 
@@ -233,7 +245,7 @@
         const sellerId = getActiveUserId();
 
         const requestData = {
-            name: document.getElementById('name').value,
+            title: document.getElementById('name').value,
             description: document.getElementById('description').value,
             initialBidPrice: parseFloat(document.getElementById('initialBidPrice').value),
             buyNowPrice: document.getElementById('buyNowPrice').value ? parseFloat(document.getElementById('buyNowPrice').value) : null,

@@ -20,8 +20,6 @@ public class S3Service implements BucketStorageService {
     @Value("${spring.s3.endpoint}")
     private String endpoint;
 
-
-
     @Override
     public void deleteImage(String id) {
     }
