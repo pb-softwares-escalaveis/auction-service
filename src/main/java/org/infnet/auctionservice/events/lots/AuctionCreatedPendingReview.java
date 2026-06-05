@@ -11,6 +11,7 @@ public record AuctionCreatedPendingReview(
         String sellerName,
         String sellerEmail,
         String auctionTitle,
+        String auctionDescription,
         Instant ocurredAt,
         String auctionThumb,
         UUID correlationId

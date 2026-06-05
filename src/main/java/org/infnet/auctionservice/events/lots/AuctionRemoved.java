@@ -2,23 +2,17 @@ package org.infnet.auctionservice.events.lots;
 
 import org.infnet.auctionservice.events.AuctionEvent;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-public record AuctionWinnerDefined(
+public record AuctionRemoved(
         Long auctionId,
         UUID sellerId,
         String sellerName,
         String sellerEmail,
-        UUID bidderId,
-        String bidderName,
-        String bidderEmail,
         String auctionTitle,
-        String auctionThumb,
-        BigDecimal winnerBidValue,
+        String imageUrl,
         Instant ocurredAt,
         UUID correlationId
-
 ) implements AuctionEvent {
 }

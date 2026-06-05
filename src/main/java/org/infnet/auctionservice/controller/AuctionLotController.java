@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.infnet.auctionservice.service.AuctionLotFacade;
 import org.infnet.auctionservice.service.AuctionLotService;
 import org.infnet.auctionservice.dto.AuctionLotRequest;
 import org.infnet.auctionservice.dto.AuctionLotResponse;
@@ -21,6 +22,7 @@ import java.util.UUID;
 @CrossOrigin(origins = "*")
 public class AuctionLotController {
     private final AuctionLotService lotService;
+    private final AuctionLotFacade lotFacade;
 
     @GetMapping("/")
     public ResponseEntity<Page<AuctionLotResponse>> getAll(
@@ -51,8 +53,8 @@ public class AuctionLotController {
     public ResponseEntity<AuctionLotResponse> createAuctionLot(
             @RequestHeader("X-User-Id") UUID userId,
             @Valid@RequestPart("data") AuctionLotRequest request,
-            @NotNull @RequestPart("image") MultipartFile image
+            @NotNull@RequestPart("image") MultipartFile image
     ) throws Exception {
-        return ResponseEntity.status(HttpStatus.CREATED).body(lotService.createAuctionLot(userId, request, image));
+        return ResponseEntity.status(HttpStatus.CREATED).body(lotFacade.createAuctionLot(userId, request, image));
     }
 }

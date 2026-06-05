@@ -1,6 +1,7 @@
 package org.infnet.auctionservice.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,9 +34,11 @@ public class AuctionLot {
     private UUID sellerId;
 
     @Column(nullable = false, length = 100)
+    @Size(min = 5, max = 100)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "description", length = 1200)
+    @Size(min = 5, max = 1200)
     private String description;
 
     @Column(nullable = false, name = "initial_bid_price")
@@ -43,6 +46,12 @@ public class AuctionLot {
 
     @Column(nullable = false, name = "current_bid_price")
     private BigDecimal currentBidPrice;
+
+    @Column(nullable = true, name = "highest_bidder_id")
+    private UUID highestBidderId;
+
+    @Column(nullable = true, name = "second_highest_bidder_id")
+    private UUID secondHighetBidderId;
 
     @Column(nullable = true, name = "buy_now_price")
     private BigDecimal buyNowPrice;
@@ -85,7 +94,7 @@ public class AuctionLot {
     }
 
     @PrePersist
-    public void onCreate(){
+    public void onCreate() {
         this.createdAt = ZonedDateTime.now();
         this.updatedAt = ZonedDateTime.now();
         this.currentBidPrice = this.initialBidPrice;
@@ -97,9 +106,13 @@ public class AuctionLot {
         this.updatedAt = ZonedDateTime.now();
     }
 
-    public void registerBid(BigDecimal bidAmount, UUID bidderId){
+    public void registerBid(BigDecimal bidAmount, UUID bidderId) {
         if (this.sellerId.equals(bidderId)) {
             throw new UserNotAllowedException("O vendedor não pode dar lances em seu próprio anúncio");
+        }
+
+        if (this.highestBidderId != null && this.highestBidderId.equals(bidderId)) {
+            throw new InvalidBidException("Você já é o maior lance deste anúncio");
         }
 
         if (this.expirationDate.isBefore(ZonedDateTime.now())) {
@@ -117,16 +130,11 @@ public class AuctionLot {
         }
 
         this.currentBidPrice = bidAmount;
+        this.secondHighetBidderId = highestBidderId;
+        this.highestBidderId = bidderId;
 
         if (this.buyNowPrice != null && bidAmount.compareTo(this.buyNowPrice) >= 0) {
             this.status = AuctionStatus.SOLD;
         }
-    }
-
-    public void removeLot(UUID userId) {
-        if (!this.sellerId.equals(userId)) {
-            throw new UserNotAllowedException("Usuário não autorizado a deletar este anúncio");
-        }
-        this.status = AuctionStatus.REMOVED;
     }
 }

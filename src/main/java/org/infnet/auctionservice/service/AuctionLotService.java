@@ -7,14 +7,11 @@ import org.infnet.auctionservice.domain.AuctionLot;
 import org.infnet.auctionservice.enums.AuctionStatus;
 import org.infnet.auctionservice.dto.AuctionLotRequest;
 import org.infnet.auctionservice.dto.AuctionLotResponse;
-import org.infnet.auctionservice.events.lots.AuctionApproved;
-import org.infnet.auctionservice.events.lots.AuctionClicked;
-import org.infnet.auctionservice.events.lots.AuctionCreatedPendingReview;
-import org.infnet.auctionservice.events.lots.AuctionRejected;
+import org.infnet.auctionservice.events.lots.*;
 import org.infnet.auctionservice.events.review.AuctionReviewApproved;
 import org.infnet.auctionservice.events.review.AuctionReviewRejected;
 import org.infnet.auctionservice.exception.UserNotAllowedException;
-import org.infnet.auctionservice.kafka.KafkaService;
+import org.infnet.auctionservice.kafka.KafkaSenderInterface;
 import org.infnet.auctionservice.mocks.UserMock;
 import org.infnet.auctionservice.mocks.UserServiceMock;
 import org.infnet.auctionservice.repository.AuctionLotRepository;
@@ -22,7 +19,6 @@ import org.infnet.auctionservice.storage.BucketStorageService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
@@ -35,7 +31,7 @@ public class AuctionLotService {
     private final AuctionLotRepository lotRepository;
     private final UserServiceMock userServiceMock;
     private final BucketStorageService bucketService;
-    private final KafkaService kafkaService;
+    private final KafkaSenderInterface kafkaService;
 
     public AuctionLotResponse getAuctionLot(Long lotId) {
         AuctionLot lot = lotRepository.findById(lotId)
@@ -52,6 +48,7 @@ public class AuctionLotService {
         return toResponse(lot);
     }
 
+    //responsabilidade do listing-service - REMOVER DEPOIS
     public Page<AuctionLotResponse> listAllActiveAuctionLots(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return lotRepository.findByStatusEquals(AuctionStatus.ACTIVE, pageable)
@@ -59,36 +56,25 @@ public class AuctionLotService {
     }
 
     @Transactional
-    public AuctionLotResponse createAuctionLot(UUID userId, AuctionLotRequest dto, MultipartFile image) throws Exception  {
-        // ---- ISSO AQUI VAI SER UMA REQ HTTP SINCRONA BLOQUEANTE BLABLABLA
-        UserMock user = userServiceMock.getUser(userId);
-        if (user == null) {
-            throw new EntityNotFoundException("Usuário não encontrado com id: " + userId);
-        }
-        // ----
-
-        if (!user.getAllowed()) {
-            throw new UserNotAllowedException("Usuário não autorizado a criar anúncios.");
-        }
-
-        if (image == null || image.isEmpty()) {
-            throw new IllegalArgumentException("A imagem do anúncio é obrigatória.");
-        }
-
-        String imageBucketUrl = bucketService.uploadImage(image); // REMOVER ISSO DO METODO @TRANSACTIONAL DEPOIS
-
+    public AuctionLotResponse saveAuctionLot(AuctionLotRequest dto, String imageUrl, UserMock user) {
         AuctionLot lot = new AuctionLot(
-                userId,
+                user.getId(),
                 dto.title(),
                 dto.description(),
                 dto.initialBidPrice(),
                 dto.buyNowPrice(),
                 dto.category(),
                 dto.durationInDays(),
-                imageBucketUrl
+                imageUrl
         );
 
-        AuctionLotResponse lotResponse = toResponse(lotRepository.save(lot));
+        AuctionLotResponse response;
+        try {
+            response = toResponse(lotRepository.save(lot));
+        } catch (Exception e) {
+            bucketService.deleteImage(imageUrl);
+            throw new RuntimeException("Erro ao salvar o anúncio: " + e.getMessage());
+        }
 
         kafkaService.sendEvent(new AuctionCreatedPendingReview(
                 lot.getId(),
@@ -96,12 +82,13 @@ public class AuctionLotService {
                 user.getName(),
                 user.getEmail(),
                 lot.getTitle(),
+                lot.getDescription(),
                 Instant.now(),
                 lot.getMainImageUrl(),
                 UUID.randomUUID()
         ));
 
-        return  lotResponse;
+        return response;
     }
 
     @Transactional
@@ -109,10 +96,24 @@ public class AuctionLotService {
         AuctionLot lot = lotRepository.findById(lotId)
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + lotId));
 
-        lot.removeLot(userId);
+        UserMock user = userServiceMock.getUser(userId);
+        if (!lot.getSellerId().equals(userId)) {
+            throw new UserNotAllowedException("Usuário não autorizado a deletar este anúncio.");
+        }
+
+        lot.setStatus(AuctionStatus.REMOVED);
         lotRepository.save(lot);
 
-        // publicar evento de anuncio removido aqui
+        kafkaService.sendEvent(new AuctionRemoved(
+                lot.getId(),
+                lot.getSellerId(),
+                user.getName(),
+                user.getEmail(),
+                lot.getTitle(),
+                lot.getMainImageUrl(),
+                Instant.now(),
+                UUID.randomUUID()
+        ));
     }
 
     @Transactional
@@ -120,8 +121,10 @@ public class AuctionLotService {
         AuctionLot lot = lotRepository.findById(event.auctionId())
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + event.auctionId()));
 
-        // acho que eu nao devia fazer essa req
         UserMock seller = userServiceMock.getUser(lot.getSellerId());
+        if (!seller.getAllowed()){
+            throw new UserNotAllowedException("Usuário não autorizado.");
+        }
 
         lot.setStatus(AuctionStatus.ACTIVE);
         lot.setExpirationDate(ZonedDateTime.now().plusDays(lot.getDurationInDays()));
@@ -145,10 +148,12 @@ public class AuctionLotService {
             AuctionLot lot = lotRepository.findById(event.auctionId())
                     .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + event.auctionId()));
 
-            // acho que eu nao devia fazer essa req
             UserMock seller = userServiceMock.getUser(lot.getSellerId());
+            if (!seller.getAllowed()){
+                throw new UserNotAllowedException("Usuário não autorizado.");
+            }
 
-            lot.setStatus(AuctionStatus.REMOVED);
+            lot.setStatus(AuctionStatus.REJECTED);
             lot.setExpirationDate(ZonedDateTime.now().plusDays(lot.getDurationInDays()));
             lotRepository.save(lot);
 

@@ -69,6 +69,7 @@ Content-Type: application/json
 	"title": "LP Leno Brega 1989",
 	"description": "LP DISCO DE VINIL LENO BREGA - VOLUME 2, BOM ESTADO GERAL!!!",
 	"initialBidPrice": 200.00,
+	"buyNowPrice": 500.00,
 	"category": "MUSIC",
 	"durationInDays": 7
 }
@@ -83,7 +84,7 @@ Content-Type: image/jpeg
 ### criar anuncio com usuario 2
 
 POST {{baseUrl}}/auctions/create
-X-User-Id: {{user2}}
+X-User-Id: {{user1}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
@@ -94,6 +95,7 @@ Content-Type: application/json
 	"title": "Bíblia Sagrada",
 	"description": "Em bom estado 152 paginas",
 	"initialBidPrice": 20.00,
+	"buyNowPrice": 100.00,
 	"category": "BOOKS",
 	"durationInDays": 4
 }
@@ -131,7 +133,7 @@ Content-Type: image/jpeg
 
 ### listar todos
 
-GET {{baseUrl}}/auctions
+GET {{baseUrl}}/auctions/
 
 
 ### buscar um
@@ -141,34 +143,34 @@ GET {{baseUrl}}/auctions/1
 
 ### dar lance no proprio anuncio
 
-POST {{baseUrl}}/auctions/1/bids
+POST {{baseUrl}}/auctions/1/bids/place
 X-User-Id: {{user1}}
 Content-Type: application/json
 
 {
-  "amount": 1000.00
+  "bidAmount": 1000.00
 }
 
 
 ### dar lance valido
 
-POST {{baseUrl}}/auctions/1/bids
-X-User-Id: {{user3}}
+POST {{baseUrl}}/auctions/1/bids/place
+X-User-Id: {{user1}}
 Content-Type: application/json
 
 {
-  "amount": 1000.00
+  "bidAmount": 1000.00
 }
 
 
 ### dar lance abaixo de 5%
 
-POST {{baseUrl}}/auctions/1/bids
+POST {{baseUrl}}/auctions/1/bids/place
 X-User-Id: {{user2}}
 Content-Type: application/json
 
 {
-  "amount": 1001.00
+  "bidAmount": 1001.00
 }
 
 ### dar lance valido com arremate
@@ -178,7 +180,7 @@ X-User-Id: {{user3}}
 Content-Type: application/json
 
 {
-  "amount": 5000.00
+  "bidAmount": 5000.00
 }
 
 

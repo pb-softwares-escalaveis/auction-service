@@ -5,6 +5,7 @@ public enum AuctionStatus {
     ACTIVE,
     EXPIRED,
     SOLD,
-    REMOVED
+    REMOVED,
+    REJECTED
 
 }

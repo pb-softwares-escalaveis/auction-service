@@ -21,11 +21,12 @@ public class ListenersMock {
     @KafkaListener(topics = {
             "auctions.bid.placed",
             "auctions.lot.approved",
+            "auction.lot.rejected",
             "auctions.lot.ended-with-winner",
             "auctions.lot.ended-without-winner",
             "reviews.auction.approved",
             "reviews.auction.rejected"
-    })
+    }, groupId = "qqcoisa")
     public void consume(AuctionEvent event) {
         System.out.printf("""
                         [EVENT]
@@ -54,7 +55,7 @@ public class ListenersMock {
                 event.ocurredAt(),
                 event.correlationId());
 
-        Thread.sleep(5000);
+        Thread.sleep(1000);
         double rng = Math.random();
 
         if  (rng < 0.77) {

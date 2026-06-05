@@ -2,7 +2,7 @@ package org.infnet.auctionservice.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.infnet.auctionservice.service.BidService;
+import org.infnet.auctionservice.service.BidFacade;
 import org.infnet.auctionservice.dto.BidRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class BidController {
-    private final BidService bidService;
+    private final BidFacade bidFacade;
 
     @PostMapping("/auctions/{auctionId}/bids/place")
     public ResponseEntity<Void> placeBid(
@@ -23,7 +23,7 @@ public class BidController {
             @PathVariable("auctionId") Long auctionId,
             @Valid@RequestBody BidRequest request
     ) {
-        bidService.placeBid(auctionId, userId, request);
+        bidFacade.placeBid(auctionId, userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

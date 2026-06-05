@@ -48,5 +48,6 @@ app:
       auction-ended-with-winner: "auctions.lot.ended-with-winner"
       auction-clicked: "auctions.lot.clicked"
       bid-placed: "auctions.bid.placed"
+      auction-removed: "auctions.lot.removed"
 
 

@@ -76,7 +76,10 @@
 <body>
 
 <nav class="navbar">
-    <h1>AuctionHub</h1>
+    <div>
+        <h1>oLeiloeiroOnline.top</h1>
+    </div>
+
     <div class="user-selector">
         <label for="globalUserId">Simulating as:</label>
         <select id="globalUserId">
@@ -201,10 +204,11 @@
                 card.innerHTML = `
                         ${auction.mainImageUrl ? `<img src="${auction.mainImageUrl}" class="auction-image" alt="${auction.name}">` : '<div class="auction-image"></div>'}
                         <div class="auction-content">
-                            <h3 class="auction-title">${auction.name}</h3>
+                            <h3 class="auction-title">${auction.title}</h3>
                             <p class="auction-desc">${auction.description}</p>
 
                             <div class="auction-meta">
+                            <span><strong>Lot ID:</strong> ${auction.id}</span>
                                 <span><strong>Category:</strong> ${auction.category.replace(/_/g, ' ')}</span>
                                 <span><strong>Seller:</strong> ${getUserName(auction.sellerId)}</span>
                                 <span><strong>Ends:</strong> ${formatDate(auction.expirationDate)}</span>
