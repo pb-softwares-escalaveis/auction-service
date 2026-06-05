@@ -33,6 +33,12 @@ public class AuctionLot {
     @Column(name = "seller_id", nullable = false)
     private UUID sellerId;
 
+    @Column(name = "seller_name", nullable = false)
+    private String sellerName;
+
+    @Column(name = "seller_email", nullable = false)
+    private String sellerEmail;
+
     @Column(nullable = false, length = 100)
     @Size(min = 5, max = 100)
     private String title;
@@ -79,11 +85,12 @@ public class AuctionLot {
     @Column(name = "updated_at", nullable = false)
     private ZonedDateTime updatedAt;
 
-    public AuctionLot(UUID sellerId, String title, String description,
-                      BigDecimal initialBidPrice, BigDecimal buyNowPrice,
+    public AuctionLot(UUID sellerId, String sellerName, String sellerEmail, String title, String description,                     BigDecimal initialBidPrice, BigDecimal buyNowPrice,
                       CategoryEnum category, int durationInDays, String mainImageUrl) {
 
         this.sellerId = sellerId;
+        this.sellerName = sellerName;
+        this.sellerEmail = sellerEmail;
         this.title = title;
         this.description = description;
         this.initialBidPrice = initialBidPrice;

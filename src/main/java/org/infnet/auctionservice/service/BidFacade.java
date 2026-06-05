@@ -36,16 +36,11 @@ public class BidFacade {
 
         BidResult result = bidService.registerBid(lotId, bidder, request);
 
-        UserMock seller = userServiceMock.getUser(result.sellerId());
-        if (seller == null || !seller.getAllowed()) {
-            throw new UserNotAllowedException("Usuário não encontrado ou não autorizado.");
-        }
-
         kafkaService.sendEvent(new BidPlaced(
                 result.lotId(),
-                seller.getId(),
-                seller.getName(),
-                seller.getEmail(),
+                result.sellerId(),
+                result.sellerName(),
+                result.sellerEmail(),
                 bidder.getId(),
                 bidder.getName(),
                 bidder.getEmail(),
@@ -59,9 +54,9 @@ public class BidFacade {
         if (result.lotStatus().equals(AuctionStatus.SOLD)) {
             kafkaService.sendEvent(new AuctionEndedWithWinner(
                     result.lotId(),
-                    seller.getId(),
-                    seller.getName(),
-                    seller.getEmail(),
+                    result.sellerId(),
+                    result.sellerName(),
+                    result.sellerEmail(),
                     bidder.getId(),
                     result.secondBidderId(),
                     bidder.getName(),

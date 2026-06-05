@@ -8,6 +8,8 @@ import java.util.UUID;
 public record BidResult(
         Long lotId,
         UUID sellerId,
+        String sellerName,
+        String sellerEmail,
         String lotTitle,
         AuctionStatus lotStatus,
         String lotImageUrl,

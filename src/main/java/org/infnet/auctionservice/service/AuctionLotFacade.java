@@ -1,7 +1,6 @@
 package org.infnet.auctionservice.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
 import org.infnet.auctionservice.dto.AuctionLotRequest;
@@ -24,7 +23,6 @@ public class AuctionLotFacade {
     private final UserServiceMock userServiceMock;
     private final BucketStorageService bucketService;
 
-    @Transactional
     public AuctionLotResponse createAuctionLot(
             UUID userId,
             AuctionLotRequest dto,
@@ -48,7 +46,7 @@ public class AuctionLotFacade {
 
         String imageBucketUrl = bucketService.uploadImage(image);
 
-        return auctionLotService.saveAuctionLot(dto, imageBucketUrl, user);
+        return auctionLotService.registerAuctionLot(dto, imageBucketUrl, user);
     }
 
     private void validateImage(MultipartFile image) throws IllegalArgumentException, IOException {

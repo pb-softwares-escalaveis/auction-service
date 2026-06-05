@@ -38,6 +38,8 @@ public class BidService {
         return new BidResult(
                 lot.getId(),
                 lot.getSellerId(),
+                lot.getSellerName(),
+                lot.getSellerEmail(),
                 lot.getTitle(),
                 lot.getStatus(),
                 lot.getMainImageUrl(),

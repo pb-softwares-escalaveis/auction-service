@@ -56,9 +56,11 @@ public class AuctionLotService {
     }
 
     @Transactional
-    public AuctionLotResponse saveAuctionLot(AuctionLotRequest dto, String imageUrl, UserMock user) {
+    public AuctionLotResponse registerAuctionLot(AuctionLotRequest dto, String imageUrl, UserMock user) {
         AuctionLot lot = new AuctionLot(
                 user.getId(),
+                user.getName(),
+                user.getEmail(),
                 dto.title(),
                 dto.description(),
                 dto.initialBidPrice(),
