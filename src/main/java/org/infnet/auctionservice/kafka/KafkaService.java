@@ -30,7 +30,7 @@ public class KafkaService implements KafkaSenderInterface {
     @Value("${app.kafka-topics.auction-removed}")
     String REMOVED_TOPIC;
 
-    private final KafkaTemplate<String, AuctionEvent> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void sendEvent(AuctionEvent event) {
         String kafkaKey = event.auctionId().toString();

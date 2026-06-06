@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component;
 public class ContentReviewConsumer {
     private final AuctionLotService lotService;
 
-    @KafkaListener(topics = "reviews.auction.approved")
+    @KafkaListener(topics = "${app.kafka-topics.review-approved}")
     public void consume(AuctionReviewApproved event){
         lotService.processApprovedReview(event);
     }
 
-    @KafkaListener(topics = "reviews.auction.rejected")
+    @KafkaListener(topics = "${app.kafka-topics.review-rejected}")
     public void consume(AuctionReviewRejected event){
         lotService.processRejectedReview(event);
     }

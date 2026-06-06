@@ -35,9 +35,11 @@ spring:
       group-id: auction-service-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       properties:
         spring.json.trusted.packages: org.infnet.auctionservice.*
+        spring.json.add.type.headers: false
+        spring.json.use.type.headers: false
 
 app:
   kafka-topics:
@@ -47,7 +49,9 @@ app:
       auction-ended-without-winner: "auctions.lot.ended-without-winner"
       auction-ended-with-winner: "auctions.lot.ended-with-winner"
       auction-clicked: "auctions.lot.clicked"
-      bid-placed: "auctions.bid.placed"
       auction-removed: "auctions.lot.removed"
+      bid-placed: "auctions.bid.placed"
+      review-rejected: "reviews.auction.rejected"
+      review-approved: "reviews.auction.approved"
 
 
