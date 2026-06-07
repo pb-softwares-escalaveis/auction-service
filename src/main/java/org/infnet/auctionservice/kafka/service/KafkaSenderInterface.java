@@ -1,4 +1,4 @@
-package org.infnet.auctionservice.kafka;
+package org.infnet.auctionservice.kafka.service;
 
 import org.infnet.auctionservice.events.AuctionEvent;
 

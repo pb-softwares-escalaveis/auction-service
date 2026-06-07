@@ -33,7 +33,6 @@ public class AuctionLotService {
     private final AuctionLotRepository lotRepository;
     private final UserServiceMock userServiceMock;
     private final BucketStorageService bucketService;
-    private final KafkaSenderInterface kafkaService;
     private final ApplicationEventPublisher eventPublisher;
 
     public AuctionLotResponse getAuctionLot(Long lotId) {
