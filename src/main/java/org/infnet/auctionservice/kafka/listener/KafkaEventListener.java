@@ -52,7 +52,7 @@ public class KafkaEventListener {
 
     @Async
     @EventListener()
-    public void handleAuctionClicked(AuctionClicked event) throws Exception{
+    public void handleAuctionClicked(AuctionClicked event){
         try {
             sender.sendEvent(event);
         } catch (Exception e) {
