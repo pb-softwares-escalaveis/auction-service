@@ -45,7 +45,7 @@ public class AuctionLotController {
             @RequestHeader("X-User-Id") UUID userId
 
     ){
-        lotService.deleteAuctionLot(userId, lotId);
+        lotFacade.deleteAuctionLot(userId, lotId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

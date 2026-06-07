@@ -12,7 +12,6 @@ import org.infnet.auctionservice.events.review.AuctionReviewApproved;
 import org.infnet.auctionservice.events.review.AuctionReviewRejected;
 import org.infnet.auctionservice.exception.UserNotAllowedException;
 import org.infnet.auctionservice.mocks.UserMock;
-import org.infnet.auctionservice.mocks.UserServiceMock;
 import org.infnet.auctionservice.repository.AuctionLotRepository;
 import org.infnet.auctionservice.storage.BucketStorageService;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,7 +29,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuctionLotService {
     private final AuctionLotRepository lotRepository;
-    private final UserServiceMock userServiceMock;
     private final BucketStorageService bucketService;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -38,7 +36,6 @@ public class AuctionLotService {
         AuctionLot lot = lotRepository.findById(lotId)
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + lotId));
 
-        // acho que isso aqui precisa ser async
         eventPublisher.publishEvent(new AuctionClicked(
                 lot.getId(),
                 lot.getCurrentBidPrice(),
@@ -95,12 +92,11 @@ public class AuctionLotService {
     }
 
     @Transactional
-    public void deleteAuctionLot(UUID userId, Long lotId) {
+    public void removeAuctionLot(UserMock user, Long lotId) {
         AuctionLot lot = lotRepository.findById(lotId)
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + lotId));
 
-        UserMock user = userServiceMock.getUser(userId);
-        if (!lot.getSellerId().equals(userId)) {
+        if (!lot.getSellerId().equals(user.getId())) {
             throw new UserNotAllowedException("Usuário não autorizado a deletar este anúncio.");
         }
 
@@ -120,14 +116,9 @@ public class AuctionLotService {
     }
 
     @Transactional
-    public void processApprovedReview(AuctionReviewApproved event) {
+    public void approveAuctionLot(AuctionReviewApproved event, UserMock user) {
         AuctionLot lot = lotRepository.findById(event.auctionId())
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + event.auctionId()));
-
-        UserMock seller = userServiceMock.getUser(lot.getSellerId());
-        if (!seller.getAllowed()){
-            throw new UserNotAllowedException("Usuário não autorizado.");
-        }
 
         lot.setStatus(AuctionStatus.ACTIVE);
         lot.setExpirationDate(Instant.now().plus(lot.getDurationInDays(), ChronoUnit.DAYS));
@@ -136,8 +127,8 @@ public class AuctionLotService {
         eventPublisher.publishEvent(new AuctionApproved(
                 lot.getId(),
                 lot.getSellerId(),
-                seller.getName(),
-                seller.getEmail(),
+                user.getName(),
+                user.getEmail(),
                 lot.getTitle(),
                 lot.getMainImageUrl(),
                 lot.getCreatedAt(),
@@ -147,32 +138,25 @@ public class AuctionLotService {
     }
 
     @Transactional
-    public void processRejectedReview(AuctionReviewRejected event) {
-        {
-            AuctionLot lot = lotRepository.findById(event.auctionId())
-                    .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + event.auctionId()));
+    public void rejectAuctionLot(AuctionReviewRejected event, UserMock user) {
+        AuctionLot lot = lotRepository.findById(event.auctionId())
+                .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + event.auctionId()));
 
-            UserMock seller = userServiceMock.getUser(lot.getSellerId());
-            if (!seller.getAllowed()){
-                throw new UserNotAllowedException("Usuário não autorizado.");
-            }
+        lot.setStatus(AuctionStatus.REJECTED);
+        lot.setExpirationDate(Instant.now().minus(lot.getDurationInDays(), ChronoUnit.DAYS));
+        lotRepository.save(lot);
 
-            lot.setStatus(AuctionStatus.REJECTED);
-            lot.setExpirationDate(Instant.now().minus(lot.getDurationInDays(), ChronoUnit.DAYS));
-            lotRepository.save(lot);
-
-            eventPublisher.publishEvent(new AuctionRejected(
-                    lot.getId(),
-                    lot.getSellerId(),
-                    seller.getName(),
-                    seller.getEmail(),
-                    event.reason(),
-                    lot.getTitle(),
-                    lot.getMainImageUrl(),
-                    Instant.now(),
-                    UUID.randomUUID()
-            ));
-        }
+        eventPublisher.publishEvent(new AuctionRejected(
+                lot.getId(),
+                lot.getSellerId(),
+                user.getName(),
+                user.getEmail(),
+                event.reason(),
+                lot.getTitle(),
+                lot.getMainImageUrl(),
+                Instant.now(),
+                UUID.randomUUID()
+        ));
     }
 
     private AuctionLotResponse toResponse(AuctionLot lot) {

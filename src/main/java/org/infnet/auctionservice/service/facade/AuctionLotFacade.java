@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
 import org.infnet.auctionservice.dto.AuctionLotRequest;
 import org.infnet.auctionservice.dto.AuctionLotResponse;
+import org.infnet.auctionservice.events.review.AuctionReviewApproved;
+import org.infnet.auctionservice.events.review.AuctionReviewRejected;
 import org.infnet.auctionservice.exception.UserNotAllowedException;
 import org.infnet.auctionservice.mocks.UserMock;
 import org.infnet.auctionservice.mocks.UserServiceMock;
@@ -30,10 +32,7 @@ public class AuctionLotFacade {
             MultipartFile image) throws Exception  {
 
         // --- REQ SINCRONA USER-SERVICE
-        UserMock user = userServiceMock.getUser(userId);
-        if (user == null) {
-            throw new EntityNotFoundException("Usuário não encontrado com id: " + userId);
-        }
+        UserMock user = getUser(userId);
 
         if (!user.getAllowed()) {
             throw new UserNotAllowedException("Usuário não autorizado.");
@@ -48,6 +47,41 @@ public class AuctionLotFacade {
         String imageBucketUrl = bucketService.uploadImage(image);
 
         return auctionLotService.registerAuctionLot(dto, imageBucketUrl, user);
+    }
+
+    public void deleteAuctionLot(UUID userId, Long lotId){
+        UserMock user = getUser(userId);
+
+        auctionLotService.removeAuctionLot(user, lotId);
+    }
+
+    public void processApprovedReview(AuctionReviewApproved event){
+        UserMock user = getUser(event.sellerId());
+
+        if (!user.getAllowed()) {
+            throw new UserNotAllowedException("Usuário não autorizado.");
+        }
+
+        auctionLotService.approveAuctionLot(event, user);
+    }
+
+    public void processRejectedReview(AuctionReviewRejected event){
+        UserMock user = getUser(event.sellerId());
+
+        if (!user.getAllowed()) {
+            throw new UserNotAllowedException("Usuário não autorizado.");
+        }
+
+        auctionLotService.rejectAuctionLot(event, user);
+    }
+
+    private UserMock getUser(UUID userId) {
+        UserMock user = userServiceMock.getUser(userId);
+
+        if (user == null) {
+            throw new EntityNotFoundException("Usuário não encontrado com id: " + userId);
+        }
+        return user;
     }
 
     private void validateImage(MultipartFile image) throws IllegalArgumentException, IOException {

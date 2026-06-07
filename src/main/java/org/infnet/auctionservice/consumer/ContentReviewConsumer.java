@@ -4,21 +4,22 @@ import lombok.RequiredArgsConstructor;
 import org.infnet.auctionservice.events.review.AuctionReviewApproved;
 import org.infnet.auctionservice.events.review.AuctionReviewRejected;
 import org.infnet.auctionservice.service.AuctionLotService;
+import org.infnet.auctionservice.service.facade.AuctionLotFacade;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class ContentReviewConsumer {
-    private final AuctionLotService lotService;
+    private final AuctionLotFacade lotFacade;
 
     @KafkaListener(topics = "${app.kafka-topics.review-approved}")
     public void consume(AuctionReviewApproved event){
-        lotService.processApprovedReview(event);
+        lotFacade.processApprovedReview(event);
     }
 
     @KafkaListener(topics = "${app.kafka-topics.review-rejected}")
     public void consume(AuctionReviewRejected event){
-        lotService.processRejectedReview(event);
+        lotFacade.processRejectedReview(event);
     }
 }

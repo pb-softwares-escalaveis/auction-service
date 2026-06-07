@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public record AuctionReviewRejected(
         Long auctionId,
+        UUID sellerId,
         Instant ocurredAt,
         String reason,
         UUID correlationId
