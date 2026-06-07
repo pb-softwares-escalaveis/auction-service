@@ -11,7 +11,6 @@ import org.infnet.auctionservice.events.lots.*;
 import org.infnet.auctionservice.events.review.AuctionReviewApproved;
 import org.infnet.auctionservice.events.review.AuctionReviewRejected;
 import org.infnet.auctionservice.exception.UserNotAllowedException;
-import org.infnet.auctionservice.kafka.service.KafkaSenderInterface;
 import org.infnet.auctionservice.mocks.UserMock;
 import org.infnet.auctionservice.mocks.UserServiceMock;
 import org.infnet.auctionservice.repository.AuctionLotRepository;
