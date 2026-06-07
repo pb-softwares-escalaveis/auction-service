@@ -1,4 +1,4 @@
-package org.infnet.auctionservice.service;
+package org.infnet.auctionservice.service.facade;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +8,7 @@ import org.infnet.auctionservice.dto.AuctionLotResponse;
 import org.infnet.auctionservice.exception.UserNotAllowedException;
 import org.infnet.auctionservice.mocks.UserMock;
 import org.infnet.auctionservice.mocks.UserServiceMock;
+import org.infnet.auctionservice.service.AuctionLotService;
 import org.infnet.auctionservice.storage.BucketStorageService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

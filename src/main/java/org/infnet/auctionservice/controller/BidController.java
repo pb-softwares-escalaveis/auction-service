@@ -2,7 +2,7 @@ package org.infnet.auctionservice.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.infnet.auctionservice.service.BidFacade;
+import org.infnet.auctionservice.service.facade.BidFacade;
 import org.infnet.auctionservice.dto.BidRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

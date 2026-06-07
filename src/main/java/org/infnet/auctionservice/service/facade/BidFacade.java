@@ -1,4 +1,4 @@
-package org.infnet.auctionservice.service;
+package org.infnet.auctionservice.service.facade;
 
 import lombok.RequiredArgsConstructor;
 import org.infnet.auctionservice.dto.BidRequest;
@@ -7,9 +7,10 @@ import org.infnet.auctionservice.enums.AuctionStatus;
 import org.infnet.auctionservice.events.bids.BidPlaced;
 import org.infnet.auctionservice.events.lots.AuctionEndedWithWinner;
 import org.infnet.auctionservice.exception.UserNotAllowedException;
-import org.infnet.auctionservice.kafka.KafkaService;
+import org.infnet.auctionservice.kafka.service.KafkaService;
 import org.infnet.auctionservice.mocks.UserMock;
 import org.infnet.auctionservice.mocks.UserServiceMock;
+import org.infnet.auctionservice.service.BidService;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;

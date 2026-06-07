@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -24,7 +24,7 @@ public class Bid {
     @Column(nullable = false)
     private BigDecimal amount;
     @Column(name = "created_at", nullable = false, updatable = false)
-    private ZonedDateTime createdAt;
+    private Instant createdAt;
 
     public Bid(AuctionLot auctionLot, UUID bidderId, BigDecimal amount) {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -41,7 +41,7 @@ public class Bid {
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = ZonedDateTime.now();
+        this.createdAt = Instant.now();
     }
 
 }

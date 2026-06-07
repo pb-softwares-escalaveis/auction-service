@@ -11,11 +11,12 @@ import org.infnet.auctionservice.events.lots.*;
 import org.infnet.auctionservice.events.review.AuctionReviewApproved;
 import org.infnet.auctionservice.events.review.AuctionReviewRejected;
 import org.infnet.auctionservice.exception.UserNotAllowedException;
-import org.infnet.auctionservice.kafka.KafkaSenderInterface;
+import org.infnet.auctionservice.kafka.service.KafkaSenderInterface;
 import org.infnet.auctionservice.mocks.UserMock;
 import org.infnet.auctionservice.mocks.UserServiceMock;
 import org.infnet.auctionservice.repository.AuctionLotRepository;
 import org.infnet.auctionservice.storage.BucketStorageService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -33,13 +34,14 @@ public class AuctionLotService {
     private final UserServiceMock userServiceMock;
     private final BucketStorageService bucketService;
     private final KafkaSenderInterface kafkaService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public AuctionLotResponse getAuctionLot(Long lotId) {
         AuctionLot lot = lotRepository.findById(lotId)
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + lotId));
 
         // acho que isso aqui precisa ser async
-        kafkaService.sendEvent(new AuctionClicked(
+        eventPublisher.publishEvent(new AuctionClicked(
                 lot.getId(),
                 lot.getCurrentBidPrice(),
                 lot.getCategory(),
@@ -79,7 +81,7 @@ public class AuctionLotService {
             throw new RuntimeException("Erro ao salvar o anúncio: " + e.getMessage());
         }
 
-        kafkaService.sendEvent(new AuctionCreatedPendingReview(
+        eventPublisher.publishEvent(new AuctionCreatedPendingReview(
                 lot.getId(),
                 lot.getSellerId(),
                 user.getName(),
@@ -107,7 +109,7 @@ public class AuctionLotService {
         lot.setStatus(AuctionStatus.REMOVED);
         lotRepository.save(lot);
 
-        kafkaService.sendEvent(new AuctionRemoved(
+        eventPublisher.publishEvent(new AuctionRemoved(
                 lot.getId(),
                 lot.getSellerId(),
                 user.getName(),
@@ -133,13 +135,14 @@ public class AuctionLotService {
         lot.setExpirationDate(Instant.now().plus(lot.getDurationInDays(), ChronoUnit.DAYS));
         lotRepository.save(lot);
 
-        kafkaService.sendEvent(new AuctionApproved(
+        eventPublisher.publishEvent(new AuctionApproved(
                 lot.getId(),
                 lot.getSellerId(),
                 seller.getName(),
                 seller.getEmail(),
                 lot.getTitle(),
                 lot.getMainImageUrl(),
+                lot.getCreatedAt(),
                 Instant.now(),
                 UUID.randomUUID()
         ));
@@ -160,7 +163,7 @@ public class AuctionLotService {
             lot.setExpirationDate(Instant.now().minus(lot.getDurationInDays(), ChronoUnit.DAYS));
             lotRepository.save(lot);
 
-            kafkaService.sendEvent(new AuctionRejected(
+            eventPublisher.publishEvent(new AuctionRejected(
                     lot.getId(),
                     lot.getSellerId(),
                     seller.getName(),

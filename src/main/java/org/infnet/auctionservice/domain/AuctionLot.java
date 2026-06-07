@@ -12,7 +12,6 @@ import org.infnet.auctionservice.exception.UserNotAllowedException;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Entity
@@ -81,10 +80,10 @@ public class AuctionLot {
     private int durationInDays = 7;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private ZonedDateTime createdAt;
+    private Instant createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private ZonedDateTime updatedAt;
+    private Instant updatedAt;
 
     public AuctionLot(UUID sellerId, String sellerName, String sellerEmail, String title, String description,                     BigDecimal initialBidPrice, BigDecimal buyNowPrice,
                       CategoryEnum category, int durationInDays, String mainImageUrl) {
@@ -103,15 +102,15 @@ public class AuctionLot {
 
     @PrePersist
     public void onCreate() {
-        this.createdAt = ZonedDateTime.now();
-        this.updatedAt = ZonedDateTime.now();
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
         this.currentBidPrice = this.initialBidPrice;
         this.status = AuctionStatus.PENDING_REVIEW;
     }
 
     @PreUpdate
     public void preUpdate() {
-        this.updatedAt = ZonedDateTime.now();
+        this.updatedAt = Instant.now();
     }
 
     public void registerBid(BigDecimal bidAmount, UUID bidderId) {

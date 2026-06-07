@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.infnet.auctionservice.service.AuctionLotFacade;
+import org.infnet.auctionservice.service.facade.AuctionLotFacade;
 import org.infnet.auctionservice.service.AuctionLotService;
 import org.infnet.auctionservice.dto.AuctionLotRequest;
 import org.infnet.auctionservice.dto.AuctionLotResponse;
