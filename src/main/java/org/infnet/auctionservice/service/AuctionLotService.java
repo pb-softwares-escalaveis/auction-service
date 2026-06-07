@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Service
@@ -129,7 +130,7 @@ public class AuctionLotService {
         }
 
         lot.setStatus(AuctionStatus.ACTIVE);
-        lot.setExpirationDate(ZonedDateTime.now().plusDays(lot.getDurationInDays()));
+        lot.setExpirationDate(Instant.now().plus(lot.getDurationInDays(), ChronoUnit.DAYS));
         lotRepository.save(lot);
 
         kafkaService.sendEvent(new AuctionApproved(
@@ -156,7 +157,7 @@ public class AuctionLotService {
             }
 
             lot.setStatus(AuctionStatus.REJECTED);
-            lot.setExpirationDate(ZonedDateTime.now().plusDays(lot.getDurationInDays()));
+            lot.setExpirationDate(Instant.now().minus(lot.getDurationInDays(), ChronoUnit.DAYS));
             lotRepository.save(lot);
 
             kafkaService.sendEvent(new AuctionRejected(

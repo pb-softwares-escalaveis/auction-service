@@ -1,17 +1,15 @@
 package org.infnet.auctionservice.kafka;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.infnet.auctionservice.events.AuctionEvent;
 import org.infnet.auctionservice.events.lots.*;
 import org.infnet.auctionservice.events.bids.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 @RequiredArgsConstructor
-@Slf4j
 public class KafkaService implements KafkaSenderInterface {
     @Value("${app.kafka-topics.auction-created-pending}")
     String PENDING_TOPIC;

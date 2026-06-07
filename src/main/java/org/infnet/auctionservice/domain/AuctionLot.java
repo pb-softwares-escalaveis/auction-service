@@ -11,6 +11,7 @@ import org.infnet.auctionservice.exception.InvalidBidException;
 import org.infnet.auctionservice.exception.UserNotAllowedException;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -63,7 +64,7 @@ public class AuctionLot {
     private BigDecimal buyNowPrice;
 
     @Column(name = "expiration_date")
-    private ZonedDateTime expirationDate;
+    private Instant expirationDate;
 
     @Column(nullable = false, name = "main_image_url")
     private String mainImageUrl;
@@ -122,7 +123,7 @@ public class AuctionLot {
             throw new InvalidBidException("Você já é o maior lance deste anúncio");
         }
 
-        if (this.expirationDate.isBefore(ZonedDateTime.now())) {
+        if (this.expirationDate.isBefore(Instant.now())) {
             throw new InvalidBidException("O período de lances para este anúncio já expirou");
         }
 

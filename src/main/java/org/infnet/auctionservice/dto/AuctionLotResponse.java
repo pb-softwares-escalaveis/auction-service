@@ -4,7 +4,7 @@ import org.infnet.auctionservice.enums.AuctionStatus;
 import org.infnet.auctionservice.enums.CategoryEnum;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 public record AuctionLotResponse(
@@ -18,5 +18,5 @@ public record AuctionLotResponse(
         CategoryEnum category,
         String mainImageUrl,
         AuctionStatus status,
-        ZonedDateTime expirationDate) {
+        Instant expirationDate) {
 }

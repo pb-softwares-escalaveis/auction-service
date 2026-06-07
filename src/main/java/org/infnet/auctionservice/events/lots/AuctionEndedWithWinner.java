@@ -12,7 +12,7 @@ public record AuctionEndedWithWinner(
         String sellerName,
         String sellerEmail,
         UUID highestBidderId,
-       UUID secondHighestBidderId,
+        UUID secondHighestBidderId,
         String bidderName,
         String bidderEmail,
         String auctionTitle,
