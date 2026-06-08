@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/usuarios/64c58708-95cf-4859-aa16-bf1c6c880f7e/status"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "64c58708-95cf-4859-aa16-bf1c6c880f7e",
+      "name": "Jair Messias Bolsonaro",
+      "email": "jmbolsonaro@brasil.com",
+      "allowed": false
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "GET",
+    "urlPattern": "/usuarios/[^/]+/status"
+  },
+  "response": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "error": "Not Found",
+      "message": "Usuário não encontrado com o ID informado."
+    }
+  }
+}

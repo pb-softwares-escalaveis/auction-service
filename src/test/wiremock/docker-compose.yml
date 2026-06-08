@@ -1,0 +1,8 @@
+services:
+  wiremock:
+    image: wiremock/wiremock:latest
+    container_name: wiremock-standalone
+    ports:
+      - "8087:8080"
+    volumes:
+    - ./mappings:/home/wiremock/mappings
