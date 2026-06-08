@@ -7,13 +7,27 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
 public interface AuctionLotRepository extends JpaRepository<AuctionLot,Long> {
-    List<AuctionLot> findByExpirationDateBefore(ZonedDateTime expirationDate);
+
+
+    @Query("""
+    SELECT lot.id
+    FROM AuctionLot lot
+    WHERE lot.status = "ACTIVE"
+    AND lot.expirationDate <= :now
+    ORDER BY lot.expirationDate
+    """)
+    List<Long> findAllExpiredIds(
+            @Param("now") Instant now,
+            Pageable pageable
+    );
 
     Page<AuctionLot> findByStatusEquals(AuctionStatus status, Pageable pageable);
 

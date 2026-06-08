@@ -46,7 +46,7 @@ Content-Type: application/json
   "description": "Removidos de vítimas do massacre ao clã Kurta pela Troupe Fantasma.",
   "initialBidPrice": 100000.00,
   "category": "COLLECTIBLES_AND_ART",
-  "durationInDays": 7
+  "durationInDays": 3
 }
 --WebAppBoundary
 Content-Disposition: form-data; name="image"; filename="olhos-escarlate.jpg"
@@ -97,7 +97,7 @@ Content-Type: application/json
 	"initialBidPrice": 20.00,
 	"buyNowPrice": 100.00,
 	"category": "BOOKS",
-	"durationInDays": 4
+	"durationInDays": 1
 }
 
 --WebAppBoundary

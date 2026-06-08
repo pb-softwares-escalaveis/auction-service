@@ -18,7 +18,6 @@ import java.util.UUID;
 @Table(name = "auction-lots", check = {
         @CheckConstraint(name = "check_initial_bid_price_positive", constraint = "initial_bid_price > 0"),
         @CheckConstraint(name = "check_buy_now_price_positive", constraint = "buy_now_price > 0"),
-        @CheckConstraint(name = "expiration_date_in_future", constraint = "expiration_date > now()")
 })
 @Getter
 @Setter
@@ -86,9 +85,16 @@ public class AuctionLot {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    public AuctionLot(UUID sellerId, String sellerName, String sellerEmail, String title, String description, BigDecimal initialBidPrice, BigDecimal buyNowPrice,
-                      CategoryEnum category, int durationInDays, String mainImageUrl) {
-
+    public AuctionLot(UUID sellerId,
+                      String sellerName,
+                      String sellerEmail,
+                      String title,
+                      String description,
+                      BigDecimal initialBidPrice,
+                      BigDecimal buyNowPrice,
+                      CategoryEnum category,
+                      int durationInDays,
+                      String mainImageUrl) {
         this.sellerId = sellerId;
         this.sellerName = sellerName;
         this.sellerEmail = sellerEmail;

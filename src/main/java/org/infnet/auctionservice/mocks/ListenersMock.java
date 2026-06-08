@@ -3,8 +3,15 @@ package org.infnet.auctionservice.mocks;
 import lombok.RequiredArgsConstructor;
 
 import org.infnet.auctionservice.events.AuctionEvent;
+import org.infnet.auctionservice.events.lots.AuctionCreatedPendingReview;
+import org.infnet.auctionservice.events.review.AuctionReviewApproved;
+import org.infnet.auctionservice.events.review.AuctionReviewRejected;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -35,37 +42,39 @@ public class ListenersMock {
     ////                event.correlationId());
     ////    }
 
-//    @KafkaListener(topics = "auctions.lot.created-pending")
-//    public void consumeAuctionCreatedPendingReview(AuctionCreatedPendingReview event) throws InterruptedException {
-//        System.out.printf("""
-//                        [EVENT]
-//                        - Event class %s
-//                        - Auction ID: %s,
-//                        - Occurred At: %s
-//                        - Correlation ID: %s
-//                        %n""",
-//                event.getClass().getSimpleName(),
-//                event.auctionId(),
-//                event.ocurredAt(),
-//                event.correlationId());
-//
-//        Thread.sleep(1000);
-//        double rng = Math.random();
-//
-//        if (rng < 0.77) {
-//            kafkaTemplate.send("reviews.auction.approved", event.auctionId().toString(), new AuctionReviewApproved(
-//                    event.auctionId(),
-//                    Instant.now(),
-//                    UUID.randomUUID()
-//            ));
-//        } else {
-//            kafkaTemplate.send("reviews.auction.rejected", event.auctionId().toString(),new AuctionReviewRejected(
-//                    event.auctionId(),
-//                    Instant.now(),
-//                    "mock recusado",
-//                    UUID.randomUUID()
-//            ));
-//        }
-//    }
+    @KafkaListener(topics = "auctions.lot.created-pending")
+    public void consumeAuctionCreatedPendingReview(AuctionCreatedPendingReview event) throws InterruptedException {
+        System.out.printf("""
+                        [EVENT]
+                        - Event class %s
+                        - Auction ID: %s,
+                        - Occurred At: %s
+                        - Correlation ID: %s
+                        %n""",
+                event.getClass().getSimpleName(),
+                event.auctionId(),
+                event.ocurredAt(),
+                event.correlationId());
+
+        Thread.sleep(1000);
+        double rng = Math.random();
+
+        if (rng < 0.77) {
+            kafkaTemplate.send("reviews.auction.approved", event.auctionId().toString(), new AuctionReviewApproved(
+                    event.auctionId(),
+                    event.sellerId(),
+                    Instant.now(),
+                    UUID.randomUUID()
+            ));
+        } else {
+            kafkaTemplate.send("reviews.auction.rejected", event.auctionId().toString(),new AuctionReviewRejected(
+                    event.auctionId(),
+                    event.sellerId(),
+                    Instant.now(),
+                    "mock recusado",
+                    UUID.randomUUID()
+            ));
+        }
+    }
 }
 
