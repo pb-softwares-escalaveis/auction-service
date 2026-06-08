@@ -8,7 +8,7 @@ import org.infnet.auctionservice.domain.AuctionLot;
 import org.infnet.auctionservice.domain.Bid;
 import org.infnet.auctionservice.dto.BidRequest;
 import org.infnet.auctionservice.events.bids.BidPlaced;
-import org.infnet.auctionservice.mocks.UserMock;
+import org.infnet.auctionservice.dto.UserStatusResponse;
 import org.infnet.auctionservice.repository.AuctionLotRepository;
 import org.infnet.auctionservice.repository.BidRepository;
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,15 +26,15 @@ public class BidService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public void registerBid(Long lotId, UserMock bidder, BidRequest request)  {
+    public void registerBid(Long lotId, UserStatusResponse bidder, BidRequest request)  {
         AuctionLot lot = lotRepository.findLockedById(lotId)
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + lotId));
 
-        lot.registerBid(request.bidAmount(), bidder.getId());
+        lot.registerBid(request.bidAmount(), bidder.id());
 
         Bid bid = new Bid(
                 lot,
-                bidder.getId(),
+                bidder.id(),
                 request.bidAmount());
 
         bidRepository.save(bid);
@@ -45,9 +45,9 @@ public class BidService {
                 lot.getSellerId(),
                 lot.getSellerName(),
                 lot.getSellerEmail(),
-                bidder.getId(),
-                bidder.getName(),
-                bidder.getEmail(),
+                bidder.id(),
+                bidder.name(),
+                bidder.email(),
                 lot.getTitle(),
                 lot.getMainImageUrl(),
                 bid.getAmount(),

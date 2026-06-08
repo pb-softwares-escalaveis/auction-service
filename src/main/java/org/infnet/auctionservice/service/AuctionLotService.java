@@ -11,7 +11,7 @@ import org.infnet.auctionservice.events.lots.*;
 import org.infnet.auctionservice.events.review.AuctionReviewApproved;
 import org.infnet.auctionservice.events.review.AuctionReviewRejected;
 import org.infnet.auctionservice.exception.UserNotAllowedException;
-import org.infnet.auctionservice.mocks.UserMock;
+import org.infnet.auctionservice.dto.UserStatusResponse;
 import org.infnet.auctionservice.repository.AuctionLotRepository;
 import org.infnet.auctionservice.storage.BucketStorageService;
 import org.springframework.context.ApplicationEventPublisher;
@@ -54,11 +54,11 @@ public class AuctionLotService {
     }
 
     @Transactional
-    public AuctionLotResponse registerAuctionLot(AuctionLotRequest dto, String imageUrl, UserMock user) {
+    public AuctionLotResponse registerAuctionLot(AuctionLotRequest dto, String imageUrl, UserStatusResponse user) {
         AuctionLot lot = new AuctionLot(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
+                user.id(),
+                user.name(),
+                user.email(),
                 dto.title(),
                 dto.description(),
                 dto.initialBidPrice(),
@@ -79,8 +79,8 @@ public class AuctionLotService {
         eventPublisher.publishEvent(new AuctionCreatedPendingReview(
                 lot.getId(),
                 lot.getSellerId(),
-                user.getName(),
-                user.getEmail(),
+                user.name(),
+                user.email(),
                 lot.getTitle(),
                 lot.getDescription(),
                 Instant.now(),
@@ -92,11 +92,11 @@ public class AuctionLotService {
     }
 
     @Transactional
-    public void removeAuctionLot(UserMock user, Long lotId) {
+    public void removeAuctionLot(UserStatusResponse user, Long lotId) {
         AuctionLot lot = lotRepository.findById(lotId)
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + lotId));
 
-        if (!lot.getSellerId().equals(user.getId())) {
+        if (!lot.getSellerId().equals(user.id())) {
             throw new UserNotAllowedException("Usuário não autorizado a deletar este anúncio.");
         }
 
@@ -106,8 +106,8 @@ public class AuctionLotService {
         eventPublisher.publishEvent(new AuctionRemoved(
                 lot.getId(),
                 lot.getSellerId(),
-                user.getName(),
-                user.getEmail(),
+                user.name(),
+                user.email(),
                 lot.getTitle(),
                 lot.getMainImageUrl(),
                 Instant.now(),
@@ -116,7 +116,7 @@ public class AuctionLotService {
     }
 
     @Transactional
-    public void approveAuctionLot(AuctionReviewApproved event, UserMock user) {
+    public void approveAuctionLot(AuctionReviewApproved event, UserStatusResponse user) {
         AuctionLot lot = lotRepository.findById(event.auctionId())
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + event.auctionId()));
 
@@ -127,8 +127,8 @@ public class AuctionLotService {
         eventPublisher.publishEvent(new AuctionApproved(
                 lot.getId(),
                 lot.getSellerId(),
-                user.getName(),
-                user.getEmail(),
+                user.name(),
+                user.email(),
                 lot.getTitle(),
                 lot.getMainImageUrl(),
                 lot.getCreatedAt(),
@@ -138,7 +138,7 @@ public class AuctionLotService {
     }
 
     @Transactional
-    public void rejectAuctionLot(AuctionReviewRejected event, UserMock user) {
+    public void rejectAuctionLot(AuctionReviewRejected event, UserStatusResponse user) {
         AuctionLot lot = lotRepository.findById(event.auctionId())
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + event.auctionId()));
 
@@ -149,8 +149,8 @@ public class AuctionLotService {
         eventPublisher.publishEvent(new AuctionRejected(
                 lot.getId(),
                 lot.getSellerId(),
-                user.getName(),
-                user.getEmail(),
+                user.name(),
+                user.email(),
                 event.reason(),
                 lot.getTitle(),
                 lot.getMainImageUrl(),

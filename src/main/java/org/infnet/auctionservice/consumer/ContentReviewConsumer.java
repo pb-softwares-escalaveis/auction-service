@@ -3,7 +3,6 @@ package org.infnet.auctionservice.consumer;
 import lombok.RequiredArgsConstructor;
 import org.infnet.auctionservice.events.review.AuctionReviewApproved;
 import org.infnet.auctionservice.events.review.AuctionReviewRejected;
-import org.infnet.auctionservice.service.AuctionLotService;
 import org.infnet.auctionservice.service.facade.AuctionLotFacade;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;

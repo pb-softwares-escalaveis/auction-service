@@ -20,7 +20,8 @@ import java.util.UUID;
         @CheckConstraint(name = "check_buy_now_price_positive", constraint = "buy_now_price > 0"),
         @CheckConstraint(name = "expiration_date_in_future", constraint = "expiration_date > now()")
 })
-@Getter@Setter
+@Getter
+@Setter
 @NoArgsConstructor
 public class AuctionLot {
     private final BigDecimal MIN_BID_RATE = BigDecimal.valueOf(1.05);
@@ -85,7 +86,7 @@ public class AuctionLot {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    public AuctionLot(UUID sellerId, String sellerName, String sellerEmail, String title, String description,                     BigDecimal initialBidPrice, BigDecimal buyNowPrice,
+    public AuctionLot(UUID sellerId, String sellerName, String sellerEmail, String title, String description, BigDecimal initialBidPrice, BigDecimal buyNowPrice,
                       CategoryEnum category, int durationInDays, String mainImageUrl) {
 
         this.sellerId = sellerId;
