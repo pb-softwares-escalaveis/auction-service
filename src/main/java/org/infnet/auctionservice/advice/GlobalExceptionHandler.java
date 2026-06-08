@@ -7,6 +7,7 @@ import org.infnet.auctionservice.exception.InvalidBidException;
 import org.infnet.auctionservice.exception.UserNotAllowedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -37,7 +38,8 @@ public class GlobalExceptionHandler {
             IllegalArgumentException.class,
             HandlerMethodValidationException.class,
             MissingRequestHeaderException.class,
-            HandlerMethodValidationException.class
+            HandlerMethodValidationException.class,
+            MethodArgumentNotValidException.class,
     })
     public ResponseEntity<ErrorResponse> handleBadRequest(Exception ex) {
 
@@ -74,5 +76,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(error);
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleMessageNotReadable(HttpMessageNotReadableException ex) {
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                "Formato de requisição inválido, verifique os campos enviados."
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 
 }

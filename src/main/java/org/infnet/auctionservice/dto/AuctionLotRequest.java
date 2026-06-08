@@ -20,7 +20,6 @@ public record AuctionLotRequest(
         @Positive(message = "O prazo de expiração deve ser de pelo menos 1 dia.")
         @Max(value = 7, message = "O prazo de expiração deve ser no máximo 7 dias.")
         Integer durationInDays,
-
         @NotNull(message = "Categoria é obrigatória")
         CategoryEnum category
 ) {

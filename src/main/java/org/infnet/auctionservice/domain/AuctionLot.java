@@ -15,15 +15,24 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "auction-lots", check = {
-        @CheckConstraint(name = "check_initial_bid_price_positive", constraint = "initial_bid_price > 0"),
-        @CheckConstraint(name = "check_buy_now_price_positive", constraint = "buy_now_price > 0"),
+@Table(name = "auction-lots",
+        check = {
+            @CheckConstraint(name = "check_initial_bid_price_positive", constraint = "initial_bid_price > 0"),
+            @CheckConstraint(name = "check_buy_now_price_positive", constraint = "buy_now_price > 0"),
+            @CheckConstraint(name = "check_buy_now_price_higher_than_initial_bid", constraint = "buy_now_price > initial_bid_price")
+},
+        indexes = {
+        @Index(
+                name = "idx_auction_status_expiration",
+                columnList = "status, expiration_date"
+        )
 })
 @Getter
 @Setter
 @NoArgsConstructor
 public class AuctionLot {
-    private final BigDecimal MIN_BID_RATE = BigDecimal.valueOf(1.05);
+    private static final BigDecimal MIN_BID_RATE =
+            BigDecimal.valueOf(1.05);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -94,7 +103,23 @@ public class AuctionLot {
                       BigDecimal buyNowPrice,
                       CategoryEnum category,
                       int durationInDays,
-                      String mainImageUrl) {
+                      String mainImageUrl
+    ) {
+        if (initialBidPrice.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException(
+                    "Valor de inicial deve ser positivo."
+            );
+        }
+
+        if (buyNowPrice != null &&
+                buyNowPrice.compareTo(initialBidPrice) <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Valor de arremate deve ser maior que o valor inicial."
+            );
+        }
+
+
         this.sellerId = sellerId;
         this.sellerName = sellerName;
         this.sellerEmail = sellerEmail;

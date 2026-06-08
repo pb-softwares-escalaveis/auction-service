@@ -6,6 +6,7 @@ import org.infnet.auctionservice.dto.AuctionLotRequest;
 import org.infnet.auctionservice.dto.AuctionLotResponse;
 import org.infnet.auctionservice.events.review.AuctionReviewApproved;
 import org.infnet.auctionservice.events.review.AuctionReviewRejected;
+import org.infnet.auctionservice.exception.UserNotAllowedException;
 import org.infnet.auctionservice.integrations.UserClient;
 import org.infnet.auctionservice.dto.UserStatusResponse;
 import org.infnet.auctionservice.service.AuctionLotService;
@@ -36,6 +37,10 @@ public class AuctionLotFacade {
 
         UserStatusResponse user = userClient.getUser(userId);
 
+        if (!user.allowed()) {
+            throw new UserNotAllowedException("Usuário não possui permissão para criar anúncios.");
+        }
+
         validateImage(image);
 
         String imageBucketUrl = bucketService.uploadImage(image);
@@ -46,17 +51,29 @@ public class AuctionLotFacade {
     public void deleteAuctionLot(UUID userId, Long lotId){
         UserStatusResponse user = userClient.getUser(userId);
 
+        if (!user.allowed()) {
+            throw new UserNotAllowedException("Usuário não possui permissão para criar anúncios.");
+        }
+
         auctionLotService.removeAuctionLot(user, lotId);
     }
 
     public void processApprovedReview(AuctionReviewApproved event){
         UserStatusResponse user = userClient.getUser(event.sellerId());
 
+        if (!user.allowed()) {
+            throw new UserNotAllowedException("Usuário não possui permissão para criar anúncios.");
+        }
+
         auctionLotService.approveAuctionLot(event, user);
     }
 
     public void processRejectedReview(AuctionReviewRejected event){
         UserStatusResponse user = userClient.getUser(event.sellerId());
+
+        if (!user.allowed()) {
+            throw new UserNotAllowedException("Usuário não possui permissão para criar anúncios.");
+        }
 
         auctionLotService.rejectAuctionLot(event, user);
     }
