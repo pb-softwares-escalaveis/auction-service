@@ -4,6 +4,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.infnet.auctionservice.dto.AuctionLotWithSellerInfo;
+import org.infnet.auctionservice.dto.UserHeaderContext;
+import org.infnet.auctionservice.enums.AuctionStatus;
 import org.infnet.auctionservice.service.facade.AuctionLotFacade;
 import org.infnet.auctionservice.service.AuctionLotService;
 import org.infnet.auctionservice.dto.AuctionLotRequest;
@@ -24,6 +27,7 @@ public class AuctionLotController {
     private final AuctionLotService lotService;
     private final AuctionLotFacade lotFacade;
 
+    // RESPONSABILIDADE DO LISTING SERVICE, REMOVER DEPOIS
     @GetMapping("/")
     public ResponseEntity<Page<AuctionLotResponse>> getAll(
             @RequestParam(defaultValue = "0") int page,
@@ -33,28 +37,47 @@ public class AuctionLotController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AuctionLotResponse> getAuctionLot(
-            @PathVariable("id") Long id
+    public ResponseEntity<AuctionLotWithSellerInfo> getAuctionLotWithSellerInfo(
+            @PathVariable("id") Long auctionLotId,
+            @RequestHeader(value = "X-User-Id", required = false) UUID userId
     ){
-        return ResponseEntity.status(HttpStatus.OK).body(lotService.getAuctionLot(id));
+        return ResponseEntity.status(HttpStatus.OK).body(lotService.getFullAuctionLot(auctionLotId, userId));
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/")
+    public ResponseEntity<Page<AuctionLotResponse>> getUserAuctionLotsByOptionalStatus(
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestParam("status") AuctionStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20")@Max(25) int size
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(lotService.listAllUserLotsByStatus(userId, status, page, size));
+    }
+
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteAuctionLot(
             @PathVariable("id") Long lotId,
-            @RequestHeader("X-User-Id") UUID userId
+            @RequestHeader("X-User-Email") String userEmail,
+            @RequestHeader("X-User-Name") String userName,
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestHeader("X-User-Allowed") boolean isAllowed
 
     ){
-        lotFacade.deleteAuctionLot(userId, lotId);
+        var userCtx = new UserHeaderContext(userId, userName, userEmail, isAllowed);
+        lotService.removeAuctionLot(userCtx, lotId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping(value = "/create", consumes = {"multipart/form-data"})
     public ResponseEntity<AuctionLotResponse> createAuctionLot(
+            @RequestHeader("X-User-Email") String userEmail,
+            @RequestHeader("X-User-Name") String userName,
             @RequestHeader("X-User-Id") UUID userId,
+            @RequestHeader("X-User-Allowed") boolean isAllowed,
             @Valid@RequestPart("data") AuctionLotRequest request,
             @NotNull@RequestPart("image") MultipartFile image
     ) throws Exception {
-        return ResponseEntity.status(HttpStatus.CREATED).body(lotFacade.createAuctionLot(userId, request, image));
+        var ctx = new UserHeaderContext(userId, userName, userEmail, isAllowed);
+        return ResponseEntity.status(HttpStatus.CREATED).body(lotFacade.createAuctionLot(ctx, request, image));
     }
 }

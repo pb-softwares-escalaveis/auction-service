@@ -58,6 +58,5 @@ public class KafkaEventListener {
         } catch (Exception e) {
             System.out.println("DO SOMETHING WITH EXCEPTION (LOG)");
         }
-
     }
 }

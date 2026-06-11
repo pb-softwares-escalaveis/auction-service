@@ -8,8 +8,6 @@ import java.util.UUID;
 public record AuctionRejected(
         Long auctionId,
         UUID sellerId,
-        String sellerName,
-        String sellerEmail,
         String reason,
         String auctionTitle,
         String auctionThumb,

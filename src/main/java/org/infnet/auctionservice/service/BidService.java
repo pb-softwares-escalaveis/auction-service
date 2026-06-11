@@ -7,8 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.infnet.auctionservice.domain.AuctionLot;
 import org.infnet.auctionservice.domain.Bid;
 import org.infnet.auctionservice.dto.BidRequest;
+import org.infnet.auctionservice.dto.UserHeaderContext;
+import org.infnet.auctionservice.enums.AuctionStatus;
 import org.infnet.auctionservice.events.bids.BidPlaced;
-import org.infnet.auctionservice.dto.UserStatusResponse;
+import org.infnet.auctionservice.events.lots.AuctionEndedWithWinner;
+import org.infnet.auctionservice.exception.UserNotAllowedException;
 import org.infnet.auctionservice.repository.AuctionLotRepository;
 import org.infnet.auctionservice.repository.BidRepository;
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,35 +29,45 @@ public class BidService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public void registerBid(Long lotId, UserStatusResponse bidder, BidRequest request)  {
+    public void placeBid(Long lotId, UserHeaderContext bidder, BidRequest request)  {
         AuctionLot lot = lotRepository.findLockedById(lotId)
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + lotId));
 
+        if (!bidder.allowed()){
+            throw new UserNotAllowedException("Usuário não autorizado.");
+        }
+
         lot.registerBid(request.bidAmount(), bidder.id());
 
-        Bid bid = new Bid(
-                lot,
-                bidder.id(),
-                request.bidAmount());
+        Bid bid = new Bid(lot, bidder.id(), request.bidAmount());
 
         bidRepository.save(bid);
         lotRepository.save(lot);
 
-        eventPublisher.publishEvent(new BidPlaced(
-                lot.getId(),
-                lot.getSellerId(),
-                lot.getSellerName(),
-                lot.getSellerEmail(),
-                bidder.id(),
-                bidder.name(),
-                bidder.email(),
-                lot.getTitle(),
-                lot.getMainImageUrl(),
-                bid.getAmount(),
-                Instant.now(),
-                UUID.randomUUID()
-        ));
-
-
+        if (lot.getStatus() == AuctionStatus.SOLD){
+            eventPublisher.publishEvent(new AuctionEndedWithWinner(
+                    lot.getId(),
+                    lot.getSellerId(),
+                    lot.getHighestBidderId(),
+                    lot.getTitle(),
+                    lot.getMainImageUrl(),
+                    lot.getCurrentBidPrice(),
+                    Instant.now(),
+                    UUID.randomUUID()
+            ));
+        } else {
+            eventPublisher.publishEvent(new BidPlaced(
+                    lot.getId(),
+                    lot.getSellerId(),
+                    bidder.id(),
+                    bidder.name(),
+                    bidder.email(),
+                    lot.getTitle(),
+                    lot.getMainImageUrl(),
+                    bid.getAmount(),
+                    Instant.now(),
+                    UUID.randomUUID()
+            ));
+        }
     }
 }

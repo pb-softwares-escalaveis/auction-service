@@ -4,15 +4,13 @@
     "url": "/usuarios/bddfe29d-3bd1-47e5-bf4b-03a50c65d534/status"
   },
   "response": {
-    "status": 200,
+    "status": 204,
     "headers": {
+      "X-User-Id": "bddfe29d-3bd1-47e5-bf4b-03a50c65d534",
+      "X-User-Name": "Nicholas Puggian",
+      "X-User-Email": "nicholas.wright@al.infnet.edu.br",
+      "X-User-Allowed": "true",
       "Content-Type": "application/json"
-    },
-    "jsonBody": {
-      "id": "bddfe29d-3bd1-47e5-bf4b-03a50c65d534",
-      "name": "Nicholas Puggian",
-      "email": "nicholas.wright@al.infnet.edu.br",
-      "allowed": true
     }
   }
 }

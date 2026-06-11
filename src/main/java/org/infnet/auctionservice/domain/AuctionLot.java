@@ -33,7 +33,6 @@ import java.util.UUID;
 public class AuctionLot {
     private static final BigDecimal MIN_BID_RATE =
             BigDecimal.valueOf(1.05);
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -41,12 +40,6 @@ public class AuctionLot {
 
     @Column(name = "seller_id", nullable = false)
     private UUID sellerId;
-
-    @Column(name = "seller_name", nullable = false)
-    private String sellerName;
-
-    @Column(name = "seller_email", nullable = false)
-    private String sellerEmail;
 
     @Column(nullable = false, length = 100)
     @Size(min = 5, max = 100)
@@ -64,9 +57,6 @@ public class AuctionLot {
 
     @Column(nullable = true, name = "highest_bidder_id")
     private UUID highestBidderId;
-
-    @Column(nullable = true, name = "second_highest_bidder_id")
-    private UUID secondHighetBidderId;
 
     @Column(nullable = true, name = "buy_now_price")
     private BigDecimal buyNowPrice;
@@ -95,8 +85,6 @@ public class AuctionLot {
     private Instant updatedAt;
 
     public AuctionLot(UUID sellerId,
-                      String sellerName,
-                      String sellerEmail,
                       String title,
                       String description,
                       BigDecimal initialBidPrice,
@@ -119,10 +107,7 @@ public class AuctionLot {
             );
         }
 
-
         this.sellerId = sellerId;
-        this.sellerName = sellerName;
-        this.sellerEmail = sellerEmail;
         this.title = title;
         this.description = description;
         this.initialBidPrice = initialBidPrice;
@@ -169,7 +154,6 @@ public class AuctionLot {
         }
 
         this.currentBidPrice = bidAmount;
-        this.secondHighetBidderId = highestBidderId;
         this.highestBidderId = bidderId;
 
         if (this.buyNowPrice != null && bidAmount.compareTo(this.buyNowPrice) >= 0) {

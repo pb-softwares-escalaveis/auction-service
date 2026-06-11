@@ -13,9 +13,13 @@ import org.springframework.data.repository.query.Param;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface AuctionLotRepository extends JpaRepository<AuctionLot,Long> {
 
+    Page<AuctionLot> findAllByStatus(
+            AuctionStatus status,
+            Pageable pageable);
 
     @Query("""
     SELECT lot.id
@@ -29,7 +33,16 @@ public interface AuctionLotRepository extends JpaRepository<AuctionLot,Long> {
             Pageable pageable
     );
 
-    Page<AuctionLot> findByStatusEquals(AuctionStatus status, Pageable pageable);
+    @Query(""" 
+     SELECT l
+     FROM AuctionLot l
+     WHERE l.sellerId = :sellerId
+     AND (:status IS NULL OR l.status = :status)
+     """)
+    Page<AuctionLot> findBySellerIdAndOptionalStatus(
+            @Param("sellerId") UUID sellerId,
+            @Param("status") AuctionStatus status,
+            Pageable pageable);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<AuctionLot> findLockedById(Long auctionLotId);

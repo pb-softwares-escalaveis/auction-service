@@ -4,15 +4,13 @@
     "url": "/usuarios/51bd71ce-a60e-40cb-84ff-998688f9acdb/status"
   },
   "response": {
-    "status": 200,
+    "status": 204,
     "headers": {
+      "X-User-Id": "51bd71ce-a60e-40cb-84ff-998688f9acdb",
+      "X-User-Name": "Guilherme Pirozi",
+      "X-User-Email": "guilherme.pirozi@al.infnet.edu.br",
+      "X-User-Allowed": "true",
       "Content-Type": "application/json"
-    },
-    "jsonBody": {
-      "id": "51bd71ce-a60e-40cb-84ff-998688f9acdb",
-      "name": "Guilherme Pirozi",
-      "email": "guilherme.pirozi@al.infnet.edu.br",
-      "allowed": true
     }
   }
 }

@@ -9,8 +9,6 @@ import java.util.UUID;
 public record BidPlaced(
         Long auctionId,
         UUID sellerId,
-        String sellerName,
-        String sellerEmail,
         UUID highestBidderId,
         String bidderName,
         String bidderEmail,

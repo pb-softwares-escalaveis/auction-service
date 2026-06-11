@@ -7,9 +7,13 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-public record AuctionLotResponse(
+public record AuctionLotWithSellerInfo(
         Long id,
         UUID sellerId,
+        String sellerName,
+        String sellerSurname,
+        String sellerCity,
+        String sellerCountry,
         String title,
         String description,
         BigDecimal initialBidPrice,
@@ -18,6 +22,5 @@ public record AuctionLotResponse(
         CategoryEnum category,
         String mainImageUrl,
         AuctionStatus status,
-        Instant expirationDate
-) {
+        Instant expirationDate) {
 }

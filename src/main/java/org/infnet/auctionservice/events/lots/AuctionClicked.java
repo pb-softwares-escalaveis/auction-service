@@ -9,6 +9,7 @@ import java.util.UUID;
 
 public record AuctionClicked(
         Long auctionId,
+        UUID userId,
         BigDecimal currentPrice,
         CategoryEnum category,
         Instant ocurredAt,
