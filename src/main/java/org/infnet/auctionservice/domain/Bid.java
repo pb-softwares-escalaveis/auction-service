@@ -10,7 +10,13 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "bids")
+@Table(name = "bids",
+        indexes = {
+                @Index(
+                        name = "idx_highest_valid_bid",
+                        columnList = "auction_lot_id, status, amount DESC"
+                )
+        })
 @Getter
 @NoArgsConstructor
 public class Bid {
@@ -29,7 +35,7 @@ public class Bid {
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name ="status", nullable = false)
+    @Column(name = "status", nullable = false)
     private BidStatus status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
