@@ -21,21 +21,29 @@ public class AuctionLotExpirationSchedule {
     @Scheduled(cron = "0 */1 * * * *")
     public void executeExpire() {
         int BATCH_SIZE = 100;
-        List<Long> ids = lotRepository.findAllExpiredIds(
-                Instant.now(),
-                PageRequest.of(0, BATCH_SIZE)
-        );
+        int totalProcessed = 0;
 
-        if (ids.isEmpty()) {
-            log.info("Schedule executado: não foram encontrados anúncios expirados.");
-            return;
-        }
+        while (true) {
+            List<Long> ids = lotRepository.findAllExpiredIds(
+                    Instant.now(),
+                    PageRequest.of(0, BATCH_SIZE)
+            );
 
-        for (Long id : ids) {
-            try {
-                expirationService.processEnd(id);
-            } catch (Exception e) {
-                log.error("Erro ao processar anúncio expirado: {}", id, e);
+            if (ids.isEmpty()) {
+                if (totalProcessed > 0) {
+                    log.info("Schedule concluído: {} anúncios expirados foram processados.", totalProcessed);
+                }
+                log.info("Schedule concluído, nenhum anúncio expirado encontrado.");
+                break;
+            }
+
+            for (Long id : ids) {
+                try {
+                    expirationService.processEnd(id);
+                    totalProcessed++;
+                } catch (Exception e) {
+                    log.error("Erro ao processar anúncio expirado: {}", id, e);
+                }
             }
         }
     }
