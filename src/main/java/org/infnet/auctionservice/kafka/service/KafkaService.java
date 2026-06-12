@@ -50,7 +50,7 @@ public class KafkaService implements KafkaSenderInterface {
             case AuctionRemoved ignored -> REMOVED_TOPIC;
             case AuctionRenewed ignored -> RENEWED_TOPIC;
             case AuctionCanceled ignored -> CANCELED_TOPIC;
-            case HighestBidInvalidated ignored -> BID_INVALIDATED_TOPIC;
+            case NewHighestBidderAssigned ignored -> BID_INVALIDATED_TOPIC;
 
             default -> throw new IllegalArgumentException("Evento não mapeado para envio: " + event.getClass().getSimpleName());
         };

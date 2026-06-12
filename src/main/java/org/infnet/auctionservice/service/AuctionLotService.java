@@ -300,7 +300,7 @@ public class AuctionLotService {
                 lot.setHighestBidderId(bid.getBidderId());
                 lot.setCurrentBidPrice(bid.getAmount());
 
-                eventPublisher.publishEvent(new HighestBidInvalidated(
+                eventPublisher.publishEvent(new NewHighestBidderAssigned(
                         UUID.randomUUID(),
                         lot.getId(),
                         bid.getBidderId(),

@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-public record HighestBidInvalidated(
+public record NewHighestBidderAssigned(
         UUID correlationId,
         Long auctionId,
         UUID bidderId,

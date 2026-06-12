@@ -57,7 +57,7 @@ app:
       auction-removed: "auctions.lot.removed"
       auction-renewed: "auctions.lot.renewed"
       auction-canceled: "auctions.lot.canceled"
-      bid-highest-invalidated: "auctions.bid.highes-invalidated"
+      bid-highest-invalidated: "auctions.bid.new-highest-assigned"
       bid-placed: "auctions.bid.placed"
       #consumer
       review-rejected: "reviews.auction.rejected"
