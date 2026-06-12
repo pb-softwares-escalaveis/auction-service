@@ -1,6 +1,6 @@
 package org.infnet.auctionservice.enums;
 
-public enum CategoryEnum {
+public enum AuctionLotCategory {
     ELECTRONICS,
     VEHICLES,
     FASHION,

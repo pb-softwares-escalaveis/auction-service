@@ -1,18 +1,18 @@
 package org.infnet.auctionservice.events.lot;
 
-import org.infnet.auctionservice.enums.AuctionLotCategory;
 import org.infnet.auctionservice.events.AuctionEvent;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-public record AuctionClicked(
+public record HighestBidInvalidated(
+        UUID correlationId,
         Long auctionId,
-        UUID userId,
-        BigDecimal currentPrice,
-        AuctionLotCategory category,
-        Instant ocurredAt,
-        UUID correlationId
+        UUID bidderId,
+        Long bidId,
+        BigDecimal amount,
+        Instant ocurredAt
+
 ) implements AuctionEvent {
 }

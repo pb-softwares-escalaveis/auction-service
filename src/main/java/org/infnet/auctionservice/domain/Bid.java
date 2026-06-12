@@ -3,6 +3,7 @@ package org.infnet.auctionservice.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.infnet.auctionservice.enums.BidStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -16,13 +17,21 @@ public class Bid {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_lot_id", nullable = false)
     private AuctionLot auctionLot;
+
     @Column(name = "bidder_id", nullable = false)
     private UUID bidderId;
+
     @Column(nullable = false)
     private BigDecimal amount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name ="status", nullable = false)
+    private BidStatus status;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -37,6 +46,7 @@ public class Bid {
         this.auctionLot = auctionLot;
         this.bidderId = bidderId;
         this.amount = amount;
+        this.status = BidStatus.VALID;
     }
 
     @PrePersist

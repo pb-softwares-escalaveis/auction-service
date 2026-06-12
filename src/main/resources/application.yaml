@@ -55,11 +55,17 @@ app:
       auction-ended-with-winner: "auctions.lot.ended-with-winner"
       auction-clicked: "auctions.lot.clicked"
       auction-removed: "auctions.lot.removed"
+      auction-renewed: "auctions.lot.renewed"
+      auction-canceled: "auctions.lot.canceled"
+      bid-highest-invalidated: "auctions.bid.highes-invalidated"
       bid-placed: "auctions.bid.placed"
       #consumer
       review-rejected: "reviews.auction.rejected"
       review-approved: "reviews.auction.approved"
       transaction-payment-fail: "transactions.status.closed-payment-failed"
       transaction-delivery-fail: "transactions.status.closed-delivery-inactive"
+      user-deleted: "users.account.deleted"
+      user-suspended: "users.account.suspended"
+      user-banned: "users.account.banned"
 
 

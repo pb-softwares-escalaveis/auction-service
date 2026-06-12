@@ -11,18 +11,22 @@ import org.infnet.auctionservice.events.lot.*;
 import org.infnet.auctionservice.events.review.AuctionReviewApproved;
 import org.infnet.auctionservice.events.review.AuctionReviewRejected;
 import org.infnet.auctionservice.events.transaction.TransactionClosed;
+import org.infnet.auctionservice.events.user.UserStatusChanged;
 import org.infnet.auctionservice.exception.UserNotAllowedException;
 import org.infnet.auctionservice.integrations.UserClient;
 import org.infnet.auctionservice.repository.AuctionLotRepository;
+import org.infnet.auctionservice.repository.BidRepository;
 import org.infnet.auctionservice.storage.BucketStorageService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -33,6 +37,7 @@ public class AuctionLotService {
     private final BucketStorageService bucketService;
     private final ApplicationEventPublisher eventPublisher;
     private final UserClient userClient;
+    private final BidRepository bidRepository;
 
     public AuctionLotWithSellerInfo getFullAuctionLot(Long lotId, UUID userId) {
         AuctionLot lot = lotRepository.findById(lotId)
@@ -248,6 +253,67 @@ public class AuctionLotService {
             log.info("Anúncio {} marcado como expirado após falha na transação de venda.", event.auctionId());
         } else {
             log.warn("Tentativa de reverter status do anúncio {} falhou pois o status não é SOLD.", event.auctionId());
+        }
+    }
+
+    @Transactional
+    public void processUserPenalty(UserStatusChanged event) {
+        int BATCH_SIZE = 50;
+        Pageable pageable = PageRequest.of(0, BATCH_SIZE);
+
+        bidRepository.invalidateAllBidsFromUser(event.userId());
+
+        while (true){
+            List<AuctionLot> activeLots = lotRepository.findAllBySellerIdAndStatus(
+                    event.userId(), AuctionStatus.ACTIVE, pageable);
+
+            if (activeLots.isEmpty()) {
+                break;
+            }
+
+            activeLots.forEach(lot -> {
+                lot.setStatus(AuctionStatus.CANCELED);
+                log.info("Status do anúncio {} alterado para CANCELED.", lot.getId());
+
+                if (lot.getHighestBidderId() != null){
+                    eventPublisher.publishEvent(new AuctionCanceled(
+                            UUID.randomUUID(),
+                            lot.getId(),
+                            lot.getHighestBidderId(),
+                            Instant.now()
+                    ));
+                }
+            });
+
+            lotRepository.saveAll(activeLots);
+            lotRepository.flush();
+        }
+
+        while (true){
+            List<AuctionLot> winningLots = lotRepository.findAllByHighestBidderIdAndStatus(event.userId(), AuctionStatus.ACTIVE, pageable);
+
+            if (winningLots.isEmpty()) {
+                break;
+            }
+
+            winningLots.forEach(lot -> bidRepository.findHighestValidBidForLot(lot.getId()).ifPresentOrElse(bid -> {
+                lot.setHighestBidderId(bid.getBidderId());
+                lot.setCurrentBidPrice(bid.getAmount());
+
+                eventPublisher.publishEvent(new HighestBidInvalidated(
+                        UUID.randomUUID(),
+                        lot.getId(),
+                        bid.getBidderId(),
+                        bid.getId(),
+                        bid.getAmount(),
+                        Instant.now()
+                ));
+            }, () -> {
+                lot.setHighestBidderId(null);
+                lot.setCurrentBidPrice(lot.getInitialBidPrice());
+            }));
+            lotRepository.saveAll(winningLots);
+            lotRepository.flush();
         }
     }
 

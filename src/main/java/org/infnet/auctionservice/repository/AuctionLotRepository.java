@@ -46,4 +46,8 @@ public interface AuctionLotRepository extends JpaRepository<AuctionLot,Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<AuctionLot> findLockedById(Long auctionLotId);
+
+    List<AuctionLot> findAllBySellerIdAndStatus(UUID sellerId, AuctionStatus status, Pageable pageable);
+
+    List<AuctionLot> findAllByHighestBidderIdAndStatus(UUID bidderId, AuctionStatus status, Pageable pageable);
 }

@@ -29,6 +29,10 @@ public class KafkaService implements KafkaSenderInterface {
     String REMOVED_TOPIC;
     @Value("${app.kafka-topics.auction-renewed}")
     String RENEWED_TOPIC;
+    @Value("${app.kafka-topics.auction-canceled}")
+    String CANCELED_TOPIC;
+    @Value("${app.kafka-topics.bid-highest-invalidated}")
+    String BID_INVALIDATED_TOPIC;
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -45,6 +49,8 @@ public class KafkaService implements KafkaSenderInterface {
             case BidPlaced ignored -> BID_PLACED_TOPIC;
             case AuctionRemoved ignored -> REMOVED_TOPIC;
             case AuctionRenewed ignored -> RENEWED_TOPIC;
+            case AuctionCanceled ignored -> CANCELED_TOPIC;
+            case HighestBidInvalidated ignored -> BID_INVALIDATED_TOPIC;
 
             default -> throw new IllegalArgumentException("Evento não mapeado para envio: " + event.getClass().getSimpleName());
         };

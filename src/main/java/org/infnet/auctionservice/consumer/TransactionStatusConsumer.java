@@ -13,9 +13,15 @@ import org.springframework.stereotype.Component;
 public class TransactionStatusConsumer {
     private final AuctionLotService lotService;
 
-    @KafkaListener(topics = {"${app.kafka-topics.transaction-delivery-fail}", "${app.kafka-topics.transaction-delivery-fail}"} )
-    public void consume(TransactionClosed event){
-        log.info("Recebido evento de falha na transação {}, relacionada ao anúncio: {}",event.transactionId(), event.auctionId());
+    @KafkaListener(topics = "${app.kafka-topics.transaction-delivery-fail}")
+    public void consumeDeliveryFail(TransactionClosed event){
+        log.info("Recebido evento de falha na ENTREGA da transação {}, relacionada ao anúncio: {}",event.transactionId(), event.auctionId());
+        lotService.handleSaleFailure(event);
+    }
+
+    @KafkaListener(topics = "${app.kafka-topics.transaction-payment-fail}")
+    public void consumePaymentFail(TransactionClosed event){
+        log.info("Recebido evento de falha no PAGAMENTO da transação {}, relacionada ao anúncio: {}",event.transactionId(), event.auctionId());
         lotService.handleSaleFailure(event);
     }
 }

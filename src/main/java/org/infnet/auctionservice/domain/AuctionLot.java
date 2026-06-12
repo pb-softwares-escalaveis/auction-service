@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.infnet.auctionservice.enums.AuctionStatus;
-import org.infnet.auctionservice.enums.CategoryEnum;
+import org.infnet.auctionservice.enums.AuctionLotCategory;
 import org.infnet.auctionservice.exception.InvalidBidException;
 import org.infnet.auctionservice.exception.UserNotAllowedException;
 
@@ -73,7 +73,7 @@ public class AuctionLot {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CategoryEnum category;
+    private AuctionLotCategory category;
 
     @Column(name = "duration_in_days", nullable = false)
     private int durationInDays = 7;
@@ -89,7 +89,7 @@ public class AuctionLot {
                       String description,
                       BigDecimal initialBidPrice,
                       BigDecimal buyNowPrice,
-                      CategoryEnum category,
+                      AuctionLotCategory category,
                       int durationInDays,
                       String mainImageUrl
     ) {

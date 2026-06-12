@@ -1,7 +1,7 @@
 package org.infnet.auctionservice.dto;
 
 import org.infnet.auctionservice.enums.AuctionStatus;
-import org.infnet.auctionservice.enums.CategoryEnum;
+import org.infnet.auctionservice.enums.AuctionLotCategory;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -19,7 +19,7 @@ public record AuctionLotWithSellerInfo(
         BigDecimal initialBidPrice,
         BigDecimal currentBidPrice,
         BigDecimal buyNowPrice,
-        CategoryEnum category,
+        AuctionLotCategory category,
         String mainImageUrl,
         AuctionStatus status,
         Instant expirationDate) {

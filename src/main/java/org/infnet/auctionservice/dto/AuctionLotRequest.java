@@ -1,7 +1,7 @@
 package org.infnet.auctionservice.dto;
 
 import jakarta.validation.constraints.*;
-import org.infnet.auctionservice.enums.CategoryEnum;
+import org.infnet.auctionservice.enums.AuctionLotCategory;
 
 import java.math.BigDecimal;
 
@@ -21,6 +21,6 @@ public record AuctionLotRequest(
         @Max(value = 7, message = "O prazo de expiração deve ser no máximo 7 dias.")
         Integer durationInDays,
         @NotNull(message = "Categoria é obrigatória")
-        CategoryEnum category
+        AuctionLotCategory category
 ) {
 }
