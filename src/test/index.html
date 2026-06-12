@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Auction Platform</title>
+    <title>Auction Service Tester</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -17,86 +17,175 @@
             --text-main: #111827;
             --text-muted: #6B7280;
             --border: #E5E7EB;
+            --warning: #F59E0B;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-
         body { background-color: var(--bg); color: var(--text-main); line-height: 1.5; }
 
-        /* Navbar & Global User Selector */
+        /* Navbar */
         .navbar {
             background-color: var(--surface); padding: 1rem 2rem; display: flex;
-            justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .navbar h1 { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
-        .user-selector { display: flex; align-items: center; gap: 10px; background: var(--bg); padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); }
-        .user-selector label { font-weight: 600; font-size: 0.9rem; }
-        .user-selector select { border: none; background: transparent; font-weight: 500; font-size: 1rem; color: var(--primary); cursor: pointer; outline: none;}
+        .navbar h1 { font-size: 1.25rem; font-weight: 700; color: var(--primary); }
+        .user-selector {
+            display: flex; align-items: center; gap: 10px;
+            background: var(--bg); padding: 8px 16px;
+            border-radius: 8px; border: 1px solid var(--border);
+        }
+        .user-selector label { font-weight: 600; font-size: 0.875rem; color: var(--text-muted); }
+        .user-selector select {
+            border: none; background: transparent; font-weight: 600;
+            font-size: 0.95rem; color: var(--primary); cursor: pointer; outline: none;
+        }
+        .user-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 3px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 600;
+        }
+        .badge-allowed { background: #D1FAE5; color: #065F46; }
+        .badge-blocked { background: #FEE2E2; color: #991B1B; }
 
-        /* Layout Grid */
-        .container { max-width: 1400px; margin: 2rem auto; padding: 0 1rem; display: grid; grid-template-columns: 350px 1fr; gap: 2rem; align-items: start; }
+        /* Layout */
+        .container {
+            max-width: 1400px; margin: 2rem auto; padding: 0 1rem;
+            display: grid; grid-template-columns: 360px 1fr;
+            gap: 2rem; align-items: start;
+        }
         @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
 
-        /* Cards & Surfaces */
-        .panel { background: var(--surface); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border); }
-        .panel-header { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        /* Panels */
+        .panel {
+            background: var(--surface); border-radius: 12px; padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border);
+        }
+        .panel-header {
+            font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
 
-        /* Form Styles */
-        .form-group { margin-bottom: 1.25rem; }
-        .form-group label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); }
-        .form-control { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; transition: border-color 0.2s; background-color: #F9FAFB; }
-        .form-control:focus { outline: none; border-color: var(--primary); background-color: var(--surface); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-        textarea.form-control { resize: vertical; min-height: 80px; }
+        /* Forms */
+        .form-group { margin-bottom: 1.1rem; }
+        .form-group label {
+            display: block; font-size: 0.8rem; font-weight: 600;
+            margin-bottom: 0.4rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .form-control {
+            width: 100%; padding: 0.65rem 0.75rem;
+            border: 1px solid var(--border); border-radius: 8px;
+            font-size: 0.9rem; transition: border-color 0.15s, box-shadow 0.15s;
+            background-color: #F9FAFB; color: var(--text-main);
+        }
+        .form-control:focus {
+            outline: none; border-color: var(--primary); background-color: var(--surface);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
+        textarea.form-control { resize: vertical; min-height: 75px; }
 
         /* Buttons */
-        .btn { display: inline-flex; justify-content: center; align-items: center; padding: 0.75rem 1.5rem; font-size: 0.95rem; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; transition: 0.2s; width: 100%; }
+        .btn {
+            display: inline-flex; justify-content: center; align-items: center; gap: 6px;
+            padding: 0.65rem 1.25rem; font-size: 0.9rem; font-weight: 600;
+            border-radius: 8px; border: none; cursor: pointer; transition: background-color 0.15s; width: 100%;
+        }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-primary { background-color: var(--primary); color: white; }
-        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-primary:hover:not(:disabled) { background-color: var(--primary-hover); }
         .btn-danger { background-color: var(--danger); color: white; }
-        .btn-danger:hover { background-color: var(--danger-hover); }
-        .btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
+        .btn-danger:hover:not(:disabled) { background-color: var(--danger-hover); }
+        .btn-sm { padding: 0.45rem 0.9rem; font-size: 0.8rem; }
 
-        /* Auctions Grid */
-        .auctions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
-        .auction-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column;}
-        .auction-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        .auction-image { width: 100%; height: 200px; object-fit: cover; background-color: #E5E7EB; }
-        .auction-content { padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1; }
-        .auction-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main); }
-        .auction-desc { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.4; flex-grow: 1; }
-        .auction-meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; display: flex; flex-direction: column; gap: 4px; }
-        .price-tag { font-size: 1.25rem; font-weight: 700; color: var(--success); }
+        /* Auction Cards */
+        .auctions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.25rem; }
+        .auction-card {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+            overflow: hidden; display: flex; flex-direction: column;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .auction-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.09); }
+        .auction-image {
+            width: 100%; height: 180px; object-fit: cover;
+            background-color: #E5E7EB; display: block;
+        }
+        .auction-image-placeholder {
+            width: 100%; height: 180px; background: linear-gradient(135deg, #E5E7EB, #D1D5DB);
+            display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 2rem;
+        }
+        .auction-content { padding: 1rem; display: flex; flex-direction: column; flex-grow: 1; }
+        .auction-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.35rem; }
+        .auction-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.45; flex-grow: 1; }
+        .auction-meta { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.75rem; display: flex; flex-direction: column; gap: 3px; }
+        .status-badge {
+            display: inline-flex; padding: 2px 8px; border-radius: 99px;
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+        }
+        .status-ACTIVE { background: #D1FAE5; color: #065F46; }
+        .status-PENDING_REVIEW { background: #FEF3C7; color: #92400E; }
+        .status-SOLD { background: #E0E7FF; color: #3730A3; }
+        .status-EXPIRED, .status-REMOVED, .status-CANCELED, .status-REJECTED { background: #FEE2E2; color: #991B1B; }
 
-        /* Bid Actions */
-        .bid-actions { margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.5rem; }
+        .price-tag { font-size: 1.2rem; font-weight: 700; color: var(--success); }
+        .bid-actions { margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.5rem; }
         .bid-input-group { display: flex; gap: 0.5rem; }
+
+        /* Toast notifications */
+        #toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast {
+            padding: 0.75rem 1.25rem; border-radius: 10px; font-size: 0.875rem; font-weight: 500;
+            color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-width: 380px;
+            animation: slideIn 0.2s ease-out;
+        }
+        .toast-success { background: var(--success); }
+        .toast-error { background: var(--danger); }
+        .toast-warning { background: var(--warning); }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .empty-state { padding: 2rem; text-align: center; color: var(--text-muted); }
+        .error-state { padding: 2rem; text-align: center; color: var(--danger); font-weight: 500; }
     </style>
 </head>
 <body>
 
-<nav class="navbar">
-    <div>
-        <h1>oLeiloeiroOnline.top</h1>
-    </div>
+<div id="toast-container"></div>
 
+<nav class="navbar">
+    <h1>🏷️ Auction Service Tester</h1>
     <div class="user-selector">
-        <label for="globalUserId">Simulating as:</label>
-        <select id="globalUserId">
-            <option value="bddfe29d-3bd1-47e5-bf4b-03a50c65d534">Nicholas Puggian (Valid)</option>
-            <option value="51bd71ce-a60e-40cb-84ff-998688f9acdb">Guilherme Pirozi (Valid)</option>
-            <option value="64c58708-95cf-4859-aa16-bf1c6c880f7e">Jair Messias Bolsonaro (Blocked)</option>
+        <label for="globalUserId">Acting as:</label>
+        <select id="globalUserId" onchange="updateUserBadge()">
+            <option value="bddfe29d-3bd1-47e5-bf4b-03a50c65d534"
+                    data-name="Nicholas Puggian"
+                    data-email="nicholas@example.com"
+                    data-allowed="true">Nicholas Puggian</option>
+            <option value="51bd71ce-a60e-40cb-84ff-998688f9acdb"
+                    data-name="Guilherme Pirozi"
+                    data-email="guilherme@example.com"
+                    data-allowed="true">Guilherme Pirozi</option>
+            <option value="a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                    data-name="Pedro Vinicius"
+                    data-email="pdrovncs@gmail.com"
+                    data-allowed="true">Pedro Vinicius</option>
+            <option value="64c58708-95cf-4859-aa16-bf1c6c880f7e"
+                    data-name="Jair Bolsonaro"
+                    data-email="jair@example.com"
+                    data-allowed="false">Jair Bolsonaro (Blocked)</option>
         </select>
+        <span id="userBadge" class="user-badge badge-allowed">✓ Allowed</span>
     </div>
 </nav>
 
 <div class="container">
+    <!-- Create Auction Form -->
     <aside class="panel">
-        <h2 class="panel-header">List an Item</h2>
+        <div class="panel-header">List an Item</div>
         <form id="createAuctionForm">
             <div class="form-group">
-                <label for="name">Item Name (Max 100 chars)</label>
-                <input type="text" id="name" class="form-control" required maxlength="100" placeholder="e.g. Vintage Watch">
+                <label for="title">Title (max 100 chars)</label>
+                <input type="text" id="title" class="form-control" required maxlength="100" placeholder="e.g. Vintage Watch">
             </div>
 
             <div class="form-group">
@@ -110,45 +199,53 @@
                     <option value="ELECTRONICS">Electronics</option>
                     <option value="VEHICLES">Vehicles</option>
                     <option value="FASHION">Fashion</option>
-                    <option value="COLLECTIBLES_AND_ART">Collectibles & Art</option>
+                    <option value="COLLECTIBLES_AND_ART">Collectibles &amp; Art</option>
                     <option value="SPORTS">Sports</option>
-                    <option value="HOME_AND_GARDEN">Home & Garden</option>
-                    <option value="OTHERS">Others</option>
+                    <option value="HOME_AND_GARDEN">Home &amp; Garden</option>
+                    <option value="HEALTH_AND_BEAUTY">Health &amp; Beauty</option>
+                    <option value="BOOKS">Books</option>
+                    <option value="MOVIE">Movie</option>
+                    <option value="INDUSTRIAL">Industrial</option>
+                    <option value="JEWELRY">Jewelry</option>
+                    <option value="PETS">Pets</option>
+                    <option value="TOYS">Toys</option>
+                    <option value="MUSIC">Music</option>
+                    <option value="OTHER">Other</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="initialBidPrice">Starting Bid ($)</label>
+                <label for="initialBidPrice">Starting Bid (R$)</label>
                 <input type="number" id="initialBidPrice" class="form-control" min="0.01" step="0.01" required placeholder="0.00">
             </div>
 
             <div class="form-group">
-                <label for="buyNowPrice">Buy Now Price ($) <span style="font-weight:normal; color:#6b7280">(Optional)</span></label>
+                <label for="buyNowPrice">Buy Now Price (R$) — optional</label>
                 <input type="number" id="buyNowPrice" class="form-control" min="0.01" step="0.01" placeholder="0.00">
             </div>
 
             <div class="form-group">
-                <label for="durationInDays">Duration (1 to 7 Days)</label>
-                <input type="number" id="durationInDays" class="form-control" min="1" max="7" step="1" required placeholder="e.g. 5">
+                <label for="durationInDays">Duration in Days (1–7)</label>
+                <input type="number" id="durationInDays" class="form-control" min="1" max="7" step="1" required placeholder="e.g. 3">
             </div>
 
             <div class="form-group">
-                <label for="image">Item Image (JPG/PNG)</label>
+                <label for="image">Item Image (JPG / PNG)</label>
                 <input type="file" id="image" class="form-control" accept="image/*" required style="padding: 0.5rem;">
             </div>
 
-            <button type="submit" class="btn btn-primary">Create Auction Lot</button>
+            <button type="submit" class="btn btn-primary" id="createBtn">Create Auction Lot</button>
         </form>
     </aside>
 
+    <!-- Auctions List -->
     <main class="panel">
         <div class="panel-header">
-            <h2>Active Auctions</h2>
-            <button type="button" class="btn btn-primary btn-sm" style="width: auto;" onclick="loadAuctions()">↻ Refresh</button>
+            <span>Active Auctions</span>
+            <button type="button" class="btn btn-primary btn-sm" style="width:auto;" onclick="loadAuctions()">↻ Refresh</button>
         </div>
-
         <div id="auctionsList" class="auctions-grid">
-            <p style="color: var(--text-muted);">Loading auctions...</p>
+            <p class="empty-state">Loading auctions...</p>
         </div>
     </main>
 </div>
@@ -156,197 +253,277 @@
 <script>
     const API_BASE_URL = 'http://localhost:8080';
 
-    // User ID to Name mapping from mock users
-    const userMap = {
-        'bddfe29d-3bd1-47e5-bf4b-03a50c65d534': 'Nicholas Puggian',
-        '51bd71ce-a60e-40cb-84ff-998688f9acdb': 'Guilherme Pirozi',
-        '64c58708-95cf-4859-aa16-bf1c6c880f7e': 'Jair Messias Bolsonaro'
-    };
+    // ─── User helpers ───────────────────────────────────────────────────────────
 
-    // Helper: Get user name from UUID
-    function getUserName(userId) {
-        return userMap[userId] || userId;
+    function getActiveUser() {
+        const sel = document.getElementById('globalUserId');
+        const opt = sel.options[sel.selectedIndex];
+        return {
+            id:      opt.value,
+            name:    opt.dataset.name,
+            email:   opt.dataset.email,
+            allowed: opt.dataset.allowed === 'true'
+        };
     }
 
-    // Helper: Get the globally selected User ID
-    function getActiveUserId() {
-        return document.getElementById('globalUserId').value;
+    /** Build the full set of user context headers required by the service. */
+    function getUserHeaders() {
+        const u = getActiveUser();
+        return {
+            'X-User-Id':      u.id,
+            'X-User-Name':    u.name,
+            'X-User-Email':   u.email,
+            'X-User-Allowed': String(u.allowed)
+        };
     }
 
-    // Helper: Format Dates
+    function updateUserBadge() {
+        const u = getActiveUser();
+        const badge = document.getElementById('userBadge');
+        if (u.allowed) {
+            badge.className = 'user-badge badge-allowed';
+            badge.textContent = '✓ Allowed';
+        } else {
+            badge.className = 'user-badge badge-blocked';
+            badge.textContent = '✗ Blocked';
+        }
+    }
+
+    // ─── Toast notifications ────────────────────────────────────────────────────
+
+    function toast(message, type = 'success', duration = 4000) {
+        const container = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        el.className = `toast toast-${type}`;
+        el.textContent = message;
+        container.appendChild(el);
+        setTimeout(() => el.remove(), duration);
+    }
+
+    // ─── Error parsing ──────────────────────────────────────────────────────────
+
+    /**
+     * Safely read a failed Response and return a human-readable message.
+     * The service returns { timestamp, status, error, message } for errors.
+     */
+    async function parseError(response) {
+        try {
+            const body = await response.json();
+            return body.message || body.error || `HTTP ${response.status}`;
+        } catch {
+            return `HTTP ${response.status} ${response.statusText}`;
+        }
+    }
+
+    // ─── Format helpers ──────────────────────────────────────────────────────────
+
     function formatDate(isoString) {
-        return new Intl.DateTimeFormat('en-US', {
-            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        return new Intl.DateTimeFormat('pt-BR', {
+            day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
         }).format(new Date(isoString));
     }
 
-    // Fetch and Display Auctions
+    function formatPrice(value) {
+        return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // ─── Load Auctions ───────────────────────────────────────────────────────────
+
     async function loadAuctions() {
         const listDiv = document.getElementById('auctionsList');
-        listDiv.innerHTML = '<p style="color: var(--text-muted);">Loading active auctions...</p>';
+        listDiv.innerHTML = '<p class="empty-state">Loading auctions...</p>';
 
         try {
+            // GET /auctions/ — no auth headers required
             const response = await fetch(`${API_BASE_URL}/auctions/`);
-            if (!response.ok) throw new Error('Failed to fetch auctions');
+
+            if (!response.ok) {
+                const msg = await parseError(response);
+                throw new Error(msg);
+            }
 
             const pageData = await response.json();
             const auctions = pageData.content || [];
 
             listDiv.innerHTML = '';
             if (auctions.length === 0) {
-                listDiv.innerHTML = '<p style="color: var(--text-muted);">No active auctions at the moment. Be the first to list an item!</p>';
+                listDiv.innerHTML = '<p class="empty-state">No active auctions yet. Be the first to list an item!</p>';
                 return;
             }
 
-            auctions.forEach(auction => {
-                const card = document.createElement('div');
-                card.className = 'auction-card';
-                card.innerHTML = `
-                        ${auction.mainImageUrl ? `<img src="${auction.mainImageUrl}" class="auction-image" alt="${auction.name}">` : '<div class="auction-image"></div>'}
-                        <div class="auction-content">
-                            <h3 class="auction-title">${auction.title}</h3>
-                            <p class="auction-desc">${auction.description}</p>
-
-                            <div class="auction-meta">
-                            <span><strong>Lot ID:</strong> ${auction.id}</span>
-                                <span><strong>Category:</strong> ${auction.category.replace(/_/g, ' ')}</span>
-                                <span><strong>Seller:</strong> ${getUserName(auction.sellerId)}</span>
-                                <span><strong>Ends:</strong> ${formatDate(auction.expirationDate)}</span>
-                            </div>
-
-                            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem;">
-                                <div>
-                                    <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Current Bid</div>
-                                    <div class="price-tag">$${auction.currentBidPrice.toFixed(2)}</div>
-                                </div>
-                                ${auction.buyNowPrice ? `
-                                <div style="text-align: right;">
-                                    <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Buy Now</div>
-                                    <div style="font-weight: 600;">$${auction.buyNowPrice.toFixed(2)}</div>
-                                </div>` : ''}
-                            </div>
-
-                            <div class="bid-actions">
-                                <form onsubmit="placeBid(event, ${auction.id})" class="bid-input-group">
-                                    <input type="number" id="bidAmount-${auction.id}" class="form-control" min="0.01" step="0.01" placeholder="Bid $" required>
-                                    <button type="submit" class="btn btn-primary btn-sm" style="width: auto;">Place Bid</button>
-                                </form>
-                                <button onclick="deleteAuction(${auction.id})" class="btn btn-danger btn-sm">Delete (If Seller)</button>
-                            </div>
-                        </div>
-                    `;
-                listDiv.appendChild(card);
-            });
-        } catch (error) {
-            console.error(error);
-            listDiv.innerHTML = `<p style="color: var(--danger);">Error loading auctions. Is the backend running? Make sure @CrossOrigin is added to your controllers.</p>`;
+            auctions.forEach(renderAuctionCard);
+        } catch (err) {
+            console.error(err);
+            listDiv.innerHTML = `<p class="error-state">⚠ Could not load auctions.<br><small>${err.message}</small></p>`;
         }
     }
 
-    // Create Auction Submit Handler
+    function renderAuctionCard(auction) {
+        const listDiv = document.getElementById('auctionsList');
+        const card = document.createElement('div');
+        card.className = 'auction-card';
+
+        const imgHtml = auction.mainImageUrl
+            ? `<img src="${auction.mainImageUrl}" class="auction-image" alt="${auction.title}">`
+            : `<div class="auction-image-placeholder">🖼</div>`;
+
+        const buyNowHtml = auction.buyNowPrice
+            ? `<div style="text-align:right">
+                 <div style="font-size:0.7rem;font-weight:600;color:var(--text-muted);text-transform:uppercase">Buy Now</div>
+                 <div style="font-weight:700">${formatPrice(auction.buyNowPrice)}</div>
+               </div>`
+            : '';
+
+        const statusClass = `status-${auction.status}`;
+
+        card.innerHTML = `
+            ${imgHtml}
+            <div class="auction-content">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.35rem">
+                    <h3 class="auction-title" style="margin:0">${auction.title}</h3>
+                    <span class="status-badge ${statusClass}" style="margin-left:8px;flex-shrink:0">${auction.status.replace(/_/g, ' ')}</span>
+                </div>
+                <p class="auction-desc">${auction.description}</p>
+
+                <div class="auction-meta">
+                    <span><strong>Lot #${auction.id}</strong> · ${auction.category.replace(/_/g, ' ')}</span>
+                    <span>Ends: ${formatDate(auction.expirationDate)}</span>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:0.75rem">
+                    <div>
+                        <div style="font-size:0.7rem;font-weight:600;color:var(--text-muted);text-transform:uppercase">Current Bid</div>
+                        <div class="price-tag">${formatPrice(auction.currentBidPrice)}</div>
+                    </div>
+                    ${buyNowHtml}
+                </div>
+
+                <div class="bid-actions">
+                    <form onsubmit="placeBid(event, ${auction.id})" class="bid-input-group">
+                        <input type="number" id="bidAmount-${auction.id}" class="form-control"
+                               min="0.01" step="0.01" placeholder="Bid amount" required>
+                        <button type="submit" class="btn btn-primary btn-sm" style="width:auto">Bid</button>
+                    </form>
+                    <button onclick="deleteAuction(${auction.id})" class="btn btn-danger btn-sm">Delete (seller only)</button>
+                </div>
+            </div>
+        `;
+        listDiv.appendChild(card);
+    }
+
+    // ─── Create Auction ──────────────────────────────────────────────────────────
+
     document.getElementById('createAuctionForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const sellerId = getActiveUserId();
 
         const requestData = {
-            title: document.getElementById('name').value,
-            description: document.getElementById('description').value,
+            title:          document.getElementById('title').value,
+            description:    document.getElementById('description').value,
             initialBidPrice: parseFloat(document.getElementById('initialBidPrice').value),
-            buyNowPrice: document.getElementById('buyNowPrice').value ? parseFloat(document.getElementById('buyNowPrice').value) : null,
+            buyNowPrice:    document.getElementById('buyNowPrice').value
+                                ? parseFloat(document.getElementById('buyNowPrice').value)
+                                : null,
             durationInDays: parseInt(document.getElementById('durationInDays').value),
-            category: document.getElementById('category').value
+            category:       document.getElementById('category').value
         };
 
+        const imageFile = document.getElementById('image').files[0];
         const formData = new FormData();
-        const blob = new Blob([JSON.stringify(requestData)], { type: "application/json" });
-        formData.append("data", blob);
-        formData.append("image", document.getElementById('image').files[0]);
+        // Spring expects @RequestPart("data") as application/json blob
+        formData.append('data', new Blob([JSON.stringify(requestData)], { type: 'application/json' }));
+        formData.append('image', imageFile);
 
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerText = "Creating...";
+        const btn = document.getElementById('createBtn');
+        btn.disabled = true;
+        btn.textContent = 'Creating...';
 
         try {
+            // POST /auctions/create — requires all 4 user headers
             const response = await fetch(`${API_BASE_URL}/auctions/create`, {
                 method: 'POST',
-                headers: { 'X-User-Id': sellerId },
+                headers: getUserHeaders(),   // X-User-Id, X-User-Name, X-User-Email, X-User-Allowed
                 body: formData
             });
 
-            if (response.ok) {
-                alert('Auction created successfully!');
-                document.getElementById('createAuctionForm').reset();
-                loadAuctions();
-            } else {
-                const error = await response.json();
-                alert('Failed to create auction:\n' + (error.message || 'Validation error'));
+            if (!response.ok) {
+                const msg = await parseError(response);
+                throw new Error(msg);
             }
+
+            toast('Auction created! It will be active after review.', 'success');
+            e.target.reset();
+            setTimeout(loadAuctions, 1200);
         } catch (err) {
             console.error(err);
-            alert('Network error. Ensure backend is running.');
+            toast(`Create failed: ${err.message}`, 'error');
         } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerText = "Create Auction Lot";
+            btn.disabled = false;
+            btn.textContent = 'Create Auction Lot';
         }
     });
 
-    // Place a Bid
+    // ─── Place Bid ───────────────────────────────────────────────────────────────
+
     async function placeBid(event, auctionId) {
-        event.preventDefault(); // Prevent page reload
-        const bidderId = getActiveUserId();
-        const bidAmountInput = document.getElementById(`bidAmount-${auctionId}`);
-        const bidAmount = parseFloat(bidAmountInput.value);
+        event.preventDefault();
+
+        const input = document.getElementById(`bidAmount-${auctionId}`);
+        const amount = parseFloat(input.value);
 
         try {
+            // POST /auctions/{id}/bids/place — requires all 4 user headers
             const response = await fetch(`${API_BASE_URL}/auctions/${auctionId}/bids/place`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-User-Id': bidderId
+                    ...getUserHeaders()   // X-User-Id, X-User-Name, X-User-Email, X-User-Allowed
                 },
-                body: JSON.stringify({ bidAmount: bidAmount })
+                body: JSON.stringify({ bidAmount: amount })
             });
 
-            if (response.ok) {
-                alert(`Success! Placed a bid of $${bidAmount.toFixed(2)} as User ${bidderId}.`);
-                bidAmountInput.value = '';
-                loadAuctions();
-            } else {
-                const error = await response.json();
-                alert('Bid Rejected:\n' + error.message);
+            if (!response.ok) {
+                const msg = await parseError(response);
+                throw new Error(msg);
             }
+
+            toast(`Bid of ${formatPrice(amount)} placed on Lot #${auctionId}!`, 'success');
+            input.value = '';
+            setTimeout(loadAuctions, 800);
         } catch (err) {
             console.error(err);
-            alert('Network error while placing bid.');
+            toast(`Bid rejected: ${err.message}`, 'error');
         }
     }
 
-    // Delete an Auction
+    // ─── Delete Auction ──────────────────────────────────────────────────────────
+
     async function deleteAuction(auctionId) {
-        const currentUserId = getActiveUserId();
-        if(!confirm(`Attempting to delete this auction as User ${currentUserId}.\n\nAre you sure?`)) return;
+        const u = getActiveUser();
+        if (!confirm(`Delete Lot #${auctionId} as ${u.name}?\n\nThis only works if you are the seller.`)) return;
 
         try {
-            const response = await fetch(`${API_BASE_URL}/auctions/${auctionId}`, {
+            // DELETE /auctions/delete/{id} — requires all 4 user headers
+            const response = await fetch(`${API_BASE_URL}/auctions/delete/${auctionId}`, {
                 method: 'DELETE',
-                headers: { 'X-User-Id': currentUserId }
+                headers: getUserHeaders()   // X-User-Id, X-User-Name, X-User-Email, X-User-Allowed
             });
 
-            if (response.ok || response.status === 204) {
-                alert('Auction deleted successfully!');
-                loadAuctions();
-            } else {
-                const error = await response.json();
-                alert('Failed to delete:\n' + error.message);
+            if (!response.ok && response.status !== 204) {
+                const msg = await parseError(response);
+                throw new Error(msg);
             }
+
+            toast(`Lot #${auctionId} deleted.`, 'success');
+            loadAuctions();
         } catch (err) {
             console.error(err);
-            alert('Network error while deleting.');
+            toast(`Delete failed: ${err.message}`, 'error');
         }
     }
 
-    // Initialize
-    window.onload = loadAuctions;
+    // ─── Init ────────────────────────────────────────────────────────────────────
+    updateUserBadge();
+    loadAuctions();
 </script>
 </body>
 </html>
