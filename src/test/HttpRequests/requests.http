@@ -1,15 +1,48 @@
-### Variáveis Globais
+### ==========================================
+### VARIÁVEIS GLOBAIS E SIMULAÇÃO DO GATEWAY
+### ==========================================
 @baseUrl = http://localhost:8080
-@user1 = bddfe29d-3bd1-47e5-bf4b-03a50c65d534
-@user2 = 51bd71ce-a60e-40cb-84ff-998688f9acdb
-#BLOQUEADO FAZ NADA
-@user3 = 64c58708-95cf-4859-aa16-bf1c6c880f7e
 
----
-### criar anuncio usuario 1
+# 👤 User 1 - Vendedor Principal (Ativo)
+@user1_id = bddfe29d-3bd1-47e5-bf4b-03a50c65d534
+@user1_name = Nicholas Puggian
+@user1_email = nicholas.puggian@al.infnet.edu.br
+@user1_allowed = true
 
+# 👤 User 2 - Comprador e Vendedor (Ativo)
+@user2_id = 51bd71ce-a60e-40cb-84ff-998688f9acdb
+@user2_name = Guilherme Pirozi
+@user2_email = guilhereme.pirozi@al.infnet.edu.br
+@user2_allowed = true
+
+# 🚫 User 3 - Usuário Banido/Bloqueado
+@user3_id = 64c58708-95cf-4859-aa16-bf1c6c880f7e
+@user3_name = Jair M. Bolsonaro
+@user3_email = bolsonaro22@gmail.com
+@user3_allowed = false
+
+
+### ==========================================
+### 1. ROTAS PÚBLICAS (Sem Headers do Gateway)
+### ==========================================
+
+### 🟢 Listar todos os anúncios ativos
+GET {{baseUrl}}/auctions/
+
+### 🟢 Buscar informações de um anúncio específico
+GET {{baseUrl}}/auctions/1
+
+
+### ==========================================
+### 2. CRIAÇÃO DE ANÚNCIOS (Requer Allowed = true)
+### ==========================================
+
+### 🔵 Criar anúncio (Usuário 1) - Completo
 POST {{baseUrl}}/auctions/create
-X-User-Id: {{user1}}
+X-User-Id: {{user1_id}}
+X-User-Name: {{user1_name}}
+X-User-Email: {{user1_email}}
+X-User-Allowed: {{user1_allowed}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
@@ -31,10 +64,13 @@ Content-Type: image/jpeg
 < ./images/pen_drive_barata.jpg
 --WebAppBoundary--
 
-### criar  anuncio usuario 1 sem buyNowPrice
 
+### 🔵 Criar anúncio (Usuário 1) - Sem BuyNowPrice
 POST {{baseUrl}}/auctions/create
-X-User-Id: {{user1}}
+X-User-Id: {{user1_id}}
+X-User-Name: {{user1_name}}
+X-User-Email: {{user1_email}}
+X-User-Allowed: {{user1_allowed}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
@@ -55,10 +91,13 @@ Content-Type: image/jpeg
 < ./images/olhos-escarlate.jpg
 --WebAppBoundary--
 
-### criar anuncio com usuario 2 e sem buyNowPrice
 
+### 🔵 Criar anúncio (Usuário 2)
 POST {{baseUrl}}/auctions/create
-X-User-Id: {{user2}}
+X-User-Id: {{user2_id}}
+X-User-Name: {{user2_name}}
+X-User-Email: {{user2_email}}
+X-User-Allowed: {{user2_allowed}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
@@ -66,51 +105,27 @@ Content-Disposition: form-data; name="data"
 Content-Type: application/json
 
 {
-	"title": "LP Leno Brega 1989",
-	"description": "LP DISCO DE VINIL LENO BREGA - VOLUME 2, BOM ESTADO GERAL!!!",
-	"initialBidPrice": 200.00,
-	"buyNowPrice": 500.00,
-	"category": "MUSIC",
-	"durationInDays": 7
+    "title": "LP Leno Brega 1989",
+    "description": "LP DISCO DE VINIL LENO BREGA - VOLUME 2, BOM ESTADO GERAL!!!",
+    "initialBidPrice": 200.00,
+    "buyNowPrice": 500.00,
+    "category": "MUSIC",
+    "durationInDays": 7
 }
-
 --WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="./images/leno.jpg"
+Content-Disposition: form-data; name="image"; filename="leno.jpg"
 Content-Type: image/jpeg
 
 < ./images/leno.jpg
 --WebAppBoundary--
 
-### criar anuncio com usuario 2
 
+### 🔴 TENTATIVA FALHA: Criar anúncio com Usuário Bloqueado (Deve retornar 403 Forbidden)
 POST {{baseUrl}}/auctions/create
-X-User-Id: {{user1}}
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="data"
-Content-Type: application/json
-
-{
-	"title": "Bíblia Sagrada",
-	"description": "Em bom estado 152 paginas",
-	"initialBidPrice": 20.00,
-	"buyNowPrice": 100.00,
-	"category": "BOOKS",
-	"durationInDays": 1
-}
-
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="./images/biblia-sagrada.jpg"
-Content-Type: image/jpeg
-
-< ./images/biblia-sagrada.jpg
---WebAppBoundary--
-
-### anuncio com usuario bloqueado
-
-POST {{baseUrl}}/auctions/create
-X-User-Id: {{user3}}
+X-User-Id: {{user3_id}}
+X-User-Name: {{user3_name}}
+X-User-Email: {{user3_email}}
+X-User-Allowed: {{user3_allowed}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
@@ -125,58 +140,62 @@ Content-Type: application/json
   "durationInDays": 3
 }
 --WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="leno.jpg"
+Content-Disposition: form-data; name="image"; filename="bloqueado.jpg"
 Content-Type: image/jpeg
 
 < ./images/leno.jpg
 --WebAppBoundary--
 
-### listar todos
 
-GET {{baseUrl}}/auctions/
+### ==========================================
+### 3. SISTEMA DE LANCES (Requer Allowed = true)
+### ==========================================
 
-
-### buscar um
-
-GET {{baseUrl}}/auctions/1
-
-
-### dar lance no proprio anuncio
-
+### 🔴 TENTATIVA FALHA: Dono dando lance no próprio anúncio (Usuário 1 no Anúncio 1)
 POST {{baseUrl}}/auctions/1/bids/place
-X-User-Id: {{user1}}
+X-User-Id: {{user1_id}}
+X-User-Name: {{user1_name}}
+X-User-Email: {{user1_email}}
+X-User-Allowed: {{user1_allowed}}
 Content-Type: application/json
 
 {
-  "bidAmount": 1000.00
+  "bidAmount": 15.00
 }
 
 
-### dar lance valido
-
+### 🔵 Lance Válido: Usuário 2 dá lance no Anúncio 1
 POST {{baseUrl}}/auctions/1/bids/place
-X-User-Id: {{user1}}
+X-User-Id: {{user2_id}}
+X-User-Name: {{user2_name}}
+X-User-Email: {{user2_email}}
+X-User-Allowed: {{user2_allowed}}
 Content-Type: application/json
 
 {
-  "bidAmount": 1000.00
+  "bidAmount": 50.00
 }
 
 
-### dar lance abaixo de 5%
-
+### 🔴 TENTATIVA FALHA: Lance com incremento inválido (< 5%)
 POST {{baseUrl}}/auctions/1/bids/place
-X-User-Id: {{user2}}
+X-User-Id: {{user2_id}}
+X-User-Name: {{user2_name}}
+X-User-Email: {{user2_email}}
+X-User-Allowed: {{user2_allowed}}
 Content-Type: application/json
 
 {
-  "bidAmount": 1001.00
+  "bidAmount": 51.00
 }
 
-### dar lance valido com arremate
 
-POST {{baseUrl}}/auctions/1/bids
-X-User-Id: {{user3}}
+### 🔴 TENTATIVA FALHA: Usuário Bloqueado tentando dar lance (Deve barrar na regra do Allowed)
+POST {{baseUrl}}/auctions/1/bids/place
+X-User-Id: {{user3_id}}
+X-User-Name: {{user3_name}}
+X-User-Email: {{user3_email}}
+X-User-Allowed: {{user3_allowed}}
 Content-Type: application/json
 
 {
@@ -184,7 +203,20 @@ Content-Type: application/json
 }
 
 
-### dono remove o anuncio
+### ==========================================
+### 4. GERENCIAMENTO (Ignora Allowed, checa posse)
+### ==========================================
 
-DELETE {{baseUrl}}/auctions/1
-X-User-Id: {{user1}}
+### 🟠 Deletar próprio anúncio (Usuário 1 deleta Anúncio 1)
+DELETE {{baseUrl}}/auctions/delete/1
+X-User-Id: {{user1_id}}
+X-User-Name: {{user1_name}}
+X-User-Email: {{user1_email}}
+X-User-Allowed: {{user1_allowed}}
+
+### 🔴 TENTATIVA FALHA: Deletar anúncio de outro usuário (Usuário 2 tenta deletar Anúncio 1)
+DELETE {{baseUrl}}/auctions/delete/1
+X-User-Id: {{user2_id}}
+X-User-Name: {{user2_name}}
+X-User-Email: {{user2_email}}
+X-User-Allowed: {{user2_allowed}}
