@@ -222,8 +222,18 @@ public class AuctionLotService {
                 oldLot.getDurationInDays(),
                 oldLot.getMainImageUrl()
         );
+
         newLot.setStatus(AuctionStatus.ACTIVE);
         newLot.setExpirationDate(Instant.now().plus(newLot.getDurationInDays(), ChronoUnit.DAYS));
+
+        eventPublisher.publishEvent(new AuctionRenewed(
+                UUID.randomUUID(),
+                newLot.getId(),
+                newLot.getSellerId(),
+                newLot.getTitle(),
+                newLot.getMainImageUrl(),
+                Instant.now()
+        ));
 
         return toResponse(lotRepository.save(newLot));
     }

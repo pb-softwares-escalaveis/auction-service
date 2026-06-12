@@ -50,6 +50,11 @@ public class KafkaEventListener {
         sender.sendEvent(event);
     }
 
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleAuctionRenewed(AuctionRenewed event){
+        sender.sendEvent(event);
+    }
+
     @Async
     @EventListener()
     public void handleAuctionClicked(AuctionClicked event){

@@ -27,6 +27,8 @@ public class KafkaService implements KafkaSenderInterface {
     String LOT_CLICKED_TOPIC;
     @Value("${app.kafka-topics.auction-removed}")
     String REMOVED_TOPIC;
+    @Value("${app.kafka-topics.auction-renewed}")
+    String RENEWED_TOPIC;
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -42,6 +44,7 @@ public class KafkaService implements KafkaSenderInterface {
             case AuctionClicked ignored -> LOT_CLICKED_TOPIC;
             case BidPlaced ignored -> BID_PLACED_TOPIC;
             case AuctionRemoved ignored -> REMOVED_TOPIC;
+            case AuctionRenewed ignored -> RENEWED_TOPIC;
 
             default -> throw new IllegalArgumentException("Evento não mapeado para envio: " + event.getClass().getSimpleName());
         };
