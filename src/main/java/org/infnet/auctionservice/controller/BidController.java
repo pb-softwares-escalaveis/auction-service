@@ -27,7 +27,7 @@ public class BidController {
             @PathVariable("id") Long auctionId,
             @Valid@RequestBody BidRequest request
     ) {
-        var ctx = new UserHeaderContext(userId, userEmail, userName, isAllowed);
+        var ctx = new UserHeaderContext(userId, userName, userEmail, isAllowed);
         bidService.placeBid(auctionId, ctx, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
