@@ -1,6 +1,7 @@
 package org.infnet.auctionservice.schedule;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.infnet.auctionservice.repository.AuctionLotRepository;
 import org.infnet.auctionservice.service.AuctionLotExpirationService;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AuctionLotExpirationSchedule {
     private final AuctionLotRepository lotRepository;
     private final AuctionLotExpirationService expirationService;
@@ -25,7 +27,7 @@ public class AuctionLotExpirationSchedule {
         );
 
         if (ids.isEmpty()) {
-            System.out.println("NOTHING TO EXPIRE"); // LOG
+            log.info("Schedule executado: não foram encontrados anúncios expirados.");
             return;
         }
 
@@ -33,7 +35,7 @@ public class AuctionLotExpirationSchedule {
             try {
                 expirationService.processEnd(id);
             } catch (Exception e) {
-                System.out.println("Error processing expired lot: " + id); // LOG
+                log.error("Erro ao processar anúncio expirado: {}", id, e);
             }
         }
     }
