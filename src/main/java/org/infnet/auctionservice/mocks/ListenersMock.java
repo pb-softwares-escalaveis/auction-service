@@ -3,7 +3,7 @@ package org.infnet.auctionservice.mocks;
 import lombok.RequiredArgsConstructor;
 
 import org.infnet.auctionservice.events.AuctionEvent;
-import org.infnet.auctionservice.events.lots.AuctionCreatedPendingReview;
+import org.infnet.auctionservice.events.lot.AuctionCreatedPendingReview;
 import org.infnet.auctionservice.events.review.AuctionReviewApproved;
 import org.infnet.auctionservice.events.review.AuctionReviewRejected;
 import org.springframework.kafka.annotation.KafkaListener;

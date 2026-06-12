@@ -47,6 +47,7 @@ integrations:
 
 app:
   kafka-topics:
+    #publiher
       auction-created-pending: "auctions.lot.created-pending"
       auction-approved: "auctions.lot.approved"
       auction-rejected: "auctions.lot.rejected"
@@ -55,7 +56,10 @@ app:
       auction-clicked: "auctions.lot.clicked"
       auction-removed: "auctions.lot.removed"
       bid-placed: "auctions.bid.placed"
+      #consumer
       review-rejected: "reviews.auction.rejected"
       review-approved: "reviews.auction.approved"
+      transaction-payment-fail: "transactions.status.closed-payment-failed"
+      transaction-delivery-fail: "transactions.status.closed-delivery-inactive"
 
 

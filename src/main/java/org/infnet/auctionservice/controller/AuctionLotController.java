@@ -3,6 +3,7 @@ package org.infnet.auctionservice.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.infnet.auctionservice.dto.AuctionLotWithSellerInfo;
 import org.infnet.auctionservice.dto.UserHeaderContext;
@@ -79,5 +80,18 @@ public class AuctionLotController {
     ) throws Exception {
         var ctx = new UserHeaderContext(userId, userName, userEmail, isAllowed);
         return ResponseEntity.status(HttpStatus.CREATED).body(lotFacade.createAuctionLot(ctx, request, image));
+    }
+
+    @PostMapping(value = "/{id}/renew")
+    public ResponseEntity<AuctionLotResponse> renewAuctionLot(
+            @RequestHeader("X-User-Email") String userEmail,
+            @RequestHeader("X-User-Name") String userName,
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestHeader("X-User-Allowed") boolean isAllowed,
+            @PathParam("id") Long lotId
+    ){
+        var ctx = new UserHeaderContext(userId, userName, userEmail, isAllowed);
+
+        return ResponseEntity.status(HttpStatus.OK).body(lotService.renewAuctionLot(lotId, ctx));
     }
 }

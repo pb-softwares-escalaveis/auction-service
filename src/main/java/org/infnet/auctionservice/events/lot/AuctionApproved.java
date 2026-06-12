@@ -1,22 +1,16 @@
-package org.infnet.auctionservice.events.bids;
+package org.infnet.auctionservice.events.lot;
 
 import org.infnet.auctionservice.events.AuctionEvent;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-public record BidPlaced(
+public record AuctionApproved(
         Long auctionId,
         UUID sellerId,
-        UUID highestBidderId,
-        String bidderName,
-        String bidderEmail,
         String auctionTitle,
         String auctionThumb,
-        BigDecimal amount,
+        Instant createdAt,
         Instant ocurredAt,
         UUID correlationId
-
-) implements AuctionEvent {
-}
+) implements AuctionEvent {}

@@ -2,8 +2,8 @@ package org.infnet.auctionservice.kafka.service;
 
 import lombok.RequiredArgsConstructor;
 import org.infnet.auctionservice.events.AuctionEvent;
-import org.infnet.auctionservice.events.lots.*;
-import org.infnet.auctionservice.events.bids.*;
+import org.infnet.auctionservice.events.lot.*;
+import org.infnet.auctionservice.events.bid.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;

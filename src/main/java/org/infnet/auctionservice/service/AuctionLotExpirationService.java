@@ -5,8 +5,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.infnet.auctionservice.domain.AuctionLot;
 import org.infnet.auctionservice.enums.AuctionStatus;
-import org.infnet.auctionservice.events.lots.AuctionEndedWithWinner;
-import org.infnet.auctionservice.events.lots.AuctionEndedWithoutWinner;
+import org.infnet.auctionservice.events.lot.AuctionEndedWithWinner;
+import org.infnet.auctionservice.events.lot.AuctionEndedWithoutWinner;
 import org.infnet.auctionservice.repository.AuctionLotRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -51,7 +51,6 @@ public class AuctionLotExpirationService {
                     lot.getId(),
                     lot.getSellerId(),
                     lot.getHighestBidderId(),
-                    lot.getSecondHighetBidderId(),
                     lot.getTitle(),
                     lot.getMainImageUrl(),
                     lot.getCurrentBidPrice(),

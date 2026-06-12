@@ -7,9 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.infnet.auctionservice.domain.AuctionLot;
 import org.infnet.auctionservice.dto.*;
 import org.infnet.auctionservice.enums.AuctionStatus;
-import org.infnet.auctionservice.events.lots.*;
+import org.infnet.auctionservice.events.lot.*;
 import org.infnet.auctionservice.events.review.AuctionReviewApproved;
 import org.infnet.auctionservice.events.review.AuctionReviewRejected;
+import org.infnet.auctionservice.events.transaction.TransactionClosed;
 import org.infnet.auctionservice.exception.UserNotAllowedException;
 import org.infnet.auctionservice.integrations.UserClient;
 import org.infnet.auctionservice.repository.AuctionLotRepository;
@@ -18,7 +19,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -74,8 +74,7 @@ public class AuctionLotService {
 
     //responsabilidade do listing-service - REMOVER DEPOIS
     public Page<AuctionLotResponse> listAllActiveAuctionLots(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return lotRepository.findAllByStatus(AuctionStatus.ACTIVE, pageable)
+        return lotRepository.findAllByStatus(AuctionStatus.ACTIVE, PageRequest.of(page, size))
                 .map(this::toResponse);
     }
 
@@ -194,6 +193,52 @@ public class AuctionLotService {
                 Instant.now(),
                 UUID.randomUUID()
         ));
+    }
+
+    @Transactional
+    public AuctionLotResponse renewAuctionLot(Long lotId, UserHeaderContext ctx) {
+        if (!ctx.allowed()){
+            throw new UserNotAllowedException("Usuário não autorizado.");
+        }
+
+        AuctionLot oldLot = lotRepository.findById(lotId)
+                .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + lotId));
+
+        if (oldLot.getStatus() != AuctionStatus.EXPIRED) {
+            throw new IllegalStateException("Apenas anúncios expirados podem ser renovados.");
+        }
+
+        if (!oldLot.getSellerId().equals(ctx.id())) {
+            throw new UserNotAllowedException("Apenas o criador pode renovar este anúncio.");
+        }
+
+        AuctionLot newLot = new AuctionLot(
+                oldLot.getSellerId(),
+                oldLot.getTitle(),
+                oldLot.getDescription(),
+                oldLot.getInitialBidPrice(),
+                oldLot.getBuyNowPrice(),
+                oldLot.getCategory(),
+                oldLot.getDurationInDays(),
+                oldLot.getMainImageUrl()
+        );
+        newLot.setStatus(AuctionStatus.ACTIVE);
+        newLot.setExpirationDate(Instant.now().plus(newLot.getDurationInDays(), ChronoUnit.DAYS));
+
+        return toResponse(lotRepository.save(newLot));
+    }
+
+    @Transactional
+    public void handleSaleFailure(TransactionClosed event) {
+        AuctionLot lot = lotRepository.findById(event.auctionId())
+                .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + event.auctionId()));
+
+        if (lot.getStatus() != AuctionStatus.SOLD) {
+            lot.setStatus(AuctionStatus.EXPIRED);
+            log.info("Anúncio {} marcado como expirado após falha na transação de venda.", event.auctionId());
+        } else {
+            log.warn("Tentativa de reverter status do anúncio {} falhou pois o status não é SOLD.", event.auctionId());
+        }
     }
 
     private AuctionLotResponse toResponse(AuctionLot lot) {

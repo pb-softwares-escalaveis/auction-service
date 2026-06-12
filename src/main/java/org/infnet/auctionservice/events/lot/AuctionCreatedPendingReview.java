@@ -1,4 +1,4 @@
-package org.infnet.auctionservice.events.lots;
+package org.infnet.auctionservice.events.lot;
 
 import org.infnet.auctionservice.events.AuctionEvent;
 

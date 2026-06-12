@@ -1,8 +1,8 @@
 package org.infnet.auctionservice.kafka.listener;
 
 import lombok.RequiredArgsConstructor;
-import org.infnet.auctionservice.events.bids.BidPlaced;
-import org.infnet.auctionservice.events.lots.*;
+import org.infnet.auctionservice.events.bid.BidPlaced;
+import org.infnet.auctionservice.events.lot.*;
 import org.infnet.auctionservice.kafka.service.KafkaSenderInterface;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
