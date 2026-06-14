@@ -9,7 +9,11 @@ import java.util.UUID;
 public record NewHighestBidderAssigned(
         UUID correlationId,
         Long auctionId,
+        String auctionTitle,
+        String auctionImage,
         UUID bidderId,
+        String bidderName,
+        String bidderEmail,
         Long bidId,
         BigDecimal amount,
         Instant ocurredAt

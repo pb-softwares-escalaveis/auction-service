@@ -303,6 +303,8 @@ public class AuctionLotService {
                 eventPublisher.publishEvent(new NewHighestBidderAssigned(
                         UUID.randomUUID(),
                         lot.getId(),
+                        lot.getTitle(),
+                        lot.getMainImageUrl(),
                         bid.getBidderId(),
                         bid.getId(),
                         bid.getAmount(),
