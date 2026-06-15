@@ -41,10 +41,6 @@ spring:
         spring.json.add.type.headers: false
         spring.json.use.type.headers: false
 
-integrations:
-  user-service:
-    base-url: http://localhost:8087
-
 app:
   kafka-topics:
     #publiher
