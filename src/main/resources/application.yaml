@@ -62,8 +62,7 @@ app:
       #consumer
       review-rejected: "reviews.auction.rejected"
       review-approved: "reviews.auction.approved"
-      transaction-payment-fail: "transactions.status.closed-payment-failed"
-      transaction-delivery-fail: "transactions.status.closed-delivery-inactive"
+      transaction-closed: "transactions.status.closed"
       user-deleted: "users.account.deleted"
       user-suspended: "users.account.suspended"
       user-banned: "users.account.banned"

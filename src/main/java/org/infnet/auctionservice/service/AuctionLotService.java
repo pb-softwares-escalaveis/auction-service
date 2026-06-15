@@ -247,7 +247,7 @@ public class AuctionLotService {
     }
 
     @Transactional
-    public void handleSaleFailure(TransactionClosed event) {
+    public void handleTransactionFailure(TransactionClosed event) {
         AuctionLot lot = lotRepository.findById(event.auctionId())
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + event.auctionId()));
 
