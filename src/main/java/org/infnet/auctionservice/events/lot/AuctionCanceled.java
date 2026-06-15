@@ -9,6 +9,6 @@ public record AuctionCanceled(
         UUID correlationId,
         Long auctionId,
         UUID highestBidderId,
-        Instant ocurredAt
+        Instant occurredAt
 ) implements AuctionEvent {
 }

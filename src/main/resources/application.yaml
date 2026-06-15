@@ -67,5 +67,6 @@ app:
       user-deleted: "users.account.deleted"
       user-suspended: "users.account.suspended"
       user-banned: "users.account.banned"
+      user-created: "users.account.created"
 
 

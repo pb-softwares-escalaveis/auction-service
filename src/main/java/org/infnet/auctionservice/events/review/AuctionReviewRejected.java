@@ -8,7 +8,7 @@ import java.util.UUID;
 public record AuctionReviewRejected(
         Long auctionId,
         UUID sellerId,
-        Instant ocurredAt,
+        Instant occurredAt,
         String reason,
         UUID correlationId
 ) implements AuctionEvent {

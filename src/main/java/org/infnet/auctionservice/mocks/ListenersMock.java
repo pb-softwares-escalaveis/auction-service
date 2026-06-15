@@ -38,7 +38,7 @@ public class ListenersMock {
     ////                        %n""",
     ////                event.getClass().getSimpleName(),
     ////                event.auctionId(),
-    ////                event.ocurredAt(),
+    ////                event.occurredAt(),
     ////                event.correlationId());
     ////    }
 
@@ -53,7 +53,7 @@ public class ListenersMock {
                         %n""",
                 event.getClass().getSimpleName(),
                 event.auctionId(),
-                event.ocurredAt(),
+                event.occurredAt(),
                 event.correlationId());
 
         Thread.sleep(1000);

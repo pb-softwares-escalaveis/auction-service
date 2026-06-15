@@ -11,7 +11,7 @@ public record AuctionRenewed(
         UUID sellerId,
         String auctionTitle,
         String auctionThumb,
-        Instant ocurredAt
+        Instant occurredAt
 
 ) implements AuctionEvent {
 }

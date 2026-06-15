@@ -5,6 +5,6 @@ import java.util.UUID;
 
 public interface AuctionEvent {
     Long auctionId();
-    Instant ocurredAt();
+    Instant occurredAt();
     UUID correlationId();
 }

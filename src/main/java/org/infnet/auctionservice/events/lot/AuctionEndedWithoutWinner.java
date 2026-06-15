@@ -8,11 +8,9 @@ import java.util.UUID;
 public record AuctionEndedWithoutWinner(
         Long auctionId,
         UUID sellerId,
-        //String sellerName,
-        //String sellerEmail,
         String auctionTitle,
         String auctionThumb,
-        Instant ocurredAt,
+        Instant occurredAt,
         UUID correlationId
 ) implements AuctionEvent {
 }

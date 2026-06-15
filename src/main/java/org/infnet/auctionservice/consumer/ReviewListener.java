@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ContentReviewConsumer {
+public class ReviewListener {
     private final AuctionLotService  lotService;
 
     @KafkaListener(topics = "${app.kafka-topics.review-approved}")

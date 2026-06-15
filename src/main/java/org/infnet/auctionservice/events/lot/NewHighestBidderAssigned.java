@@ -10,13 +10,11 @@ public record NewHighestBidderAssigned(
         UUID correlationId,
         Long auctionId,
         String auctionTitle,
-        String auctionImage,
+        String auctionThumb,
         UUID bidderId,
-        String bidderName,
-        String bidderEmail,
         Long bidId,
         BigDecimal amount,
-        Instant ocurredAt
+        Instant occurredAt
 
 ) implements AuctionEvent {
 }

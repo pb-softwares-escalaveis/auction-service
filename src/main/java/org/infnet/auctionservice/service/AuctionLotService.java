@@ -13,7 +13,8 @@ import org.infnet.auctionservice.events.review.AuctionReviewRejected;
 import org.infnet.auctionservice.events.transaction.TransactionClosed;
 import org.infnet.auctionservice.events.user.UserStatusChanged;
 import org.infnet.auctionservice.exception.UserNotAllowedException;
-import org.infnet.auctionservice.integrations.UserClient;
+import org.infnet.auctionservice.projection.UserProjection;
+import org.infnet.auctionservice.projection.UserProjectionRepository;
 import org.infnet.auctionservice.repository.AuctionLotRepository;
 import org.infnet.auctionservice.repository.BidRepository;
 import org.infnet.auctionservice.storage.BucketStorageService;
@@ -36,22 +37,24 @@ public class AuctionLotService {
     private final AuctionLotRepository lotRepository;
     private final BucketStorageService bucketService;
     private final ApplicationEventPublisher eventPublisher;
-    private final UserClient userClient;
     private final BidRepository bidRepository;
+    private final UserProjectionRepository projectionRepository;
 
     public AuctionLotWithSellerInfo getFullAuctionLot(Long lotId, UUID userId) {
         AuctionLot lot = lotRepository.findById(lotId)
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + lotId));
 
-        SellerInfoResponse sellerInfo = userClient.getSellerInfo(userId);
+        UserProjection sellerInfo = projectionRepository.findById(lot.getSellerId()).orElse(null);
 
         AuctionLotWithSellerInfo completeLot = new AuctionLotWithSellerInfo(
                 lot.getId(),
-                sellerInfo.id(),
-                sellerInfo.name(),
-                sellerInfo.surname(),
-                sellerInfo.city(),
-                sellerInfo.country(),
+                lot.getSellerId(),
+                sellerInfo != null ? sellerInfo.getFullName() : "Nome Completo",
+                sellerInfo != null ? sellerInfo.getCity() : "Cidade",
+                sellerInfo != null ? sellerInfo.getCountry() : "País",
+                sellerInfo != null ? sellerInfo.getState() : "Estado",
+                sellerInfo != null ? sellerInfo.getProfilePic() : "https://bucket.oleiloeiroonline.top/profile-images/default-pfp.jpg",
+                sellerInfo != null ? sellerInfo.getScore() : 3F,
                 lot.getTitle(),
                 lot.getDescription(),
                 lot.getInitialBidPrice(),
@@ -334,4 +337,6 @@ public class AuctionLotService {
                 lot.getExpirationDate());
     }
 }
+
+
 

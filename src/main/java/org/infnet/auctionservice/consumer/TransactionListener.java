@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class TransactionStatusConsumer {
+public class TransactionListener {
     private final AuctionLotService lotService;
 
     @KafkaListener(topics = "${app.kafka-topics.transaction-delivery-fail}")

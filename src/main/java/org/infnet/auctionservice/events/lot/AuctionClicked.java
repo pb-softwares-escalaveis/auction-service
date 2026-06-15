@@ -12,7 +12,7 @@ public record AuctionClicked(
         UUID userId,
         BigDecimal currentPrice,
         AuctionLotCategory category,
-        Instant ocurredAt,
+        Instant occurredAt,
         UUID correlationId
 ) implements AuctionEvent {
 }

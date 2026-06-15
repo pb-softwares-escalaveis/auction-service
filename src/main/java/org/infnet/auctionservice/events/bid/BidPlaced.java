@@ -15,7 +15,7 @@ public record BidPlaced(
         String auctionTitle,
         String auctionThumb,
         BigDecimal amount,
-        Instant ocurredAt,
+        Instant occurredAt,
         UUID correlationId
 
 ) implements AuctionEvent {

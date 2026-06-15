@@ -6,6 +6,6 @@ import java.util.UUID;
 public record UserStatusChanged(
         UUID correlationId,
         UUID userId,
-        Instant ocurredAt
+        Instant occurredAt
 ) {
 }

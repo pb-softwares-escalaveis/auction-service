@@ -13,7 +13,7 @@ public record AuctionEndedWithWinner(
         String auctionTitle,
         String auctionThumb,
         BigDecimal winnerBidValue,
-        Instant ocurredAt,
+        Instant occurredAt,
         UUID correlationId
 
 ) implements AuctionEvent {

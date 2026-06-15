@@ -12,7 +12,7 @@ public record AuctionCreatedPendingReview(
         String sellerEmail,
         String auctionTitle,
         String auctionDescription,
-        Instant ocurredAt,
+        Instant occurredAt,
         String auctionThumb,
         UUID correlationId
 ) implements AuctionEvent {

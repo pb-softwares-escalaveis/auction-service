@@ -4,8 +4,11 @@ import java.util.UUID;
 
 public record SellerInfoResponse(
         UUID id,
-        String name,
-        String surname,
+        String fullName,
+        String profilePic,
+        String email,
+        Float nota,
+        String state,
         String city,
         String country
 ) {

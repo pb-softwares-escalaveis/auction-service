@@ -11,6 +11,6 @@ public record AuctionApproved(
         String auctionTitle,
         String auctionThumb,
         Instant createdAt,
-        Instant ocurredAt,
+        Instant occurredAt,
         UUID correlationId
 ) implements AuctionEvent {}
