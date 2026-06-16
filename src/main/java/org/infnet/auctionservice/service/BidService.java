@@ -56,6 +56,8 @@ public class BidService {
                     UUID.randomUUID()
             ));
         } else {
+            Instant now = Instant.now();
+
             eventPublisher.publishEvent(new BidPlaced(
                     lot.getId(),
                     lot.getSellerId(),
@@ -65,7 +67,8 @@ public class BidService {
                     lot.getTitle(),
                     lot.getMainImageUrl(),
                     bid.getAmount(),
-                    Instant.now(),
+                    now,
+                    now.toEpochMilli(),
                     UUID.randomUUID()
             ));
         }

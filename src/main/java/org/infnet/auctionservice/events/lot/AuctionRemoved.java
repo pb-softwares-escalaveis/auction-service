@@ -11,7 +11,7 @@ public record AuctionRemoved(
         String sellerName,
         String sellerEmail,
         String auctionTitle,
-        String imageUrl,
+        String auctionThumb,
         Instant occurredAt,
         UUID correlationId
 ) implements AuctionEvent {

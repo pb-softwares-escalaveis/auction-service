@@ -12,6 +12,7 @@ public record AuctionRejected(
         String auctionTitle,
         String auctionThumb,
         Instant occurredAt,
+        Instant createdAt,
         UUID correlationId
 ) implements AuctionEvent {
 }

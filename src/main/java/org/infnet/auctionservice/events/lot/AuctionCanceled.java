@@ -9,6 +9,8 @@ public record AuctionCanceled(
         UUID correlationId,
         Long auctionId,
         UUID highestBidderId,
+        String auctionTitle,
+        String auctionThumb,
         Instant occurredAt
 ) implements AuctionEvent {
 }

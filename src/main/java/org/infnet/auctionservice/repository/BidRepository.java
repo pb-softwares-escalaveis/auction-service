@@ -13,7 +13,7 @@ public interface BidRepository extends JpaRepository<Bid,Long> {
     @Modifying
     @Query("""
         UPDATE Bid b
-        SET b.status = 'INVALIDATED'
+        SET b.status = 'INVALID'
         WHERE b.bidderId = :bidderId
     """)
     void invalidateAllBidsFromUser(@Param("bidderId") UUID bidderId);

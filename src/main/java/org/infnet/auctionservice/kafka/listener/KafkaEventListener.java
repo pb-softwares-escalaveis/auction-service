@@ -60,6 +60,16 @@ public class KafkaEventListener {
         sender.sendEvent(event);
     }
 
+    @EventListener
+    public void handleAuctionCanceled2(AuctionCanceled event){
+        sender.sendEvent(event);
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleNewHighestBidderAssigned(NewHighestBidderAssigned event){
+        sender.sendEvent(event);
+    }
+
     @Async
     @EventListener()
     public void handleAuctionClicked(AuctionClicked event){

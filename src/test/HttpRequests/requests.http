@@ -6,19 +6,19 @@
 # 👤 User 1 - Vendedor Principal (Ativo)
 @user1_id = bddfe29d-3bd1-47e5-bf4b-03a50c65d534
 @user1_name = Nicholas Puggian
-@user1_email = nicholas.puggian@al.infnet.edu.br
+@user1_email = rodrigo.cloureiro@al.infnet.edu.br
 @user1_allowed = true
 
 # 👤 User 2 - Comprador e Vendedor (Ativo)
 @user2_id = 51bd71ce-a60e-40cb-84ff-998688f9acdb
 @user2_name = Guilherme Pirozi
-@user2_email = guilhereme.pirozi@al.infnet.edu.br
+@user2_email = rodrigo.cloureiro@al.infnet.edu.br
 @user2_allowed = true
 
 # 🚫 User 3 - Usuário Banido/Bloqueado
 @user3_id = 64c58708-95cf-4859-aa16-bf1c6c880f7e
 @user3_name = Jair M. Bolsonaro
-@user3_email = bolsonaro22@gmail.com
+@user3_email = rodrigo.cloureiro@al.infnet.edu.br
 @user3_allowed = false
 
 
@@ -51,7 +51,7 @@ Content-Type: application/json
 
 {
   "title": "Pen Drive de Barata 12KB",
-  "description": "Sobrevive ao apocalipse nuclear muito novo",
+  "description": "Sobrevive ao apocalipse nazista nuclear fazendo sexo no camarote com muito novo",
   "category": "ELECTRONICS",
   "initialBidPrice": 10.00,
   "buyNowPrice": 200.00,
@@ -208,7 +208,7 @@ Content-Type: application/json
 ### ==========================================
 
 ### 🟠 Deletar próprio anúncio (Usuário 1 deleta Anúncio 1)
-DELETE {{baseUrl}}/auctions/delete/1
+DELETE {{baseUrl}}/auctions/delete/2
 X-User-Id: {{user1_id}}
 X-User-Name: {{user1_name}}
 X-User-Email: {{user1_email}}
