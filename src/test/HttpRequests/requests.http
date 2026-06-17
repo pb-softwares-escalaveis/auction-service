@@ -1,7 +1,7 @@
 ### ==========================================
 ### VARIÁVEIS GLOBAIS E SIMULAÇÃO DO GATEWAY
 ### ==========================================
-@baseUrl = http://localhost:8080
+@baseUrl = http://localhost:8066
 
 # 👤 User 1 - Vendedor Principal (Ativo)
 @user1_id = bddfe29d-3bd1-47e5-bf4b-03a50c65d534
@@ -165,7 +165,7 @@ Content-Type: application/json
 
 
 ### 🔵 Lance Válido: Usuário 2 dá lance no Anúncio 1
-POST {{baseUrl}}/auctions/1/bids/place
+POST {{baseUrl}}/auctions/3/bids/place
 X-User-Id: {{user2_id}}
 X-User-Name: {{user2_name}}
 X-User-Email: {{user2_email}}

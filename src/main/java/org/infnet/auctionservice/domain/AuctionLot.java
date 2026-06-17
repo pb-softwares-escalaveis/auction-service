@@ -15,7 +15,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "auction-lots",
+@Table(name = "auction_lots",
         check = {
             @CheckConstraint(name = "check_initial_bid_price_positive", constraint = "initial_bid_price > 0"),
             @CheckConstraint(name = "check_buy_now_price_positive", constraint = "buy_now_price > 0"),

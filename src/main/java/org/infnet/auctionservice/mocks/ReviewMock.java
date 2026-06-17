@@ -3,8 +3,15 @@ package org.infnet.auctionservice.mocks;
 import lombok.RequiredArgsConstructor;
 
 import org.infnet.auctionservice.events.AuctionEvent;
+import org.infnet.auctionservice.events.lot.AuctionCreatedPendingReview;
+import org.infnet.auctionservice.events.review.AuctionReviewApproved;
+import org.infnet.auctionservice.events.review.AuctionReviewRejected;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -12,28 +19,28 @@ public class ReviewMock {
     private final KafkaTemplate<String, AuctionEvent> kafkaTemplate;
 
 //    @KafkaListener(topics = {
-    ////            "auctions.bid.placed",
-    ////            "auctions.lot.approved",
-    ////            "auction.lot.rejected",
-    ////            "auctions.lot.ended-with-winner",
-    ////            "auctions.lot.ended-without-winner",
-    ////            "reviews.auction.approved",
-    ////            "reviews.auction.rejected",
-    ////            "auctions.lot.created-pending"
-    ////    }, groupId = "qqcoisa")
-    ////    public void consume(AuctionEvent event) {
-    ////        System.out.printf("""
-    ////                        [EVENT]
-    ////                        - Event class %s
-    ////                        - Auction ID: %s,
-    ////                        - Occurred At: %s
-    ////                        - Correlation ID: %s
-    ////                        %n""",
-    ////                event.getClass().getSimpleName(),
-    ////                event.auctionId(),
-    ////                event.occurredAt(),
-    ////                event.correlationId());
-    ////    }
+//                "auctions.bid.placed",
+//                "auctions.lot.approved",
+//                "auction.lot.rejected",
+//                "auctions.lot.ended-with-winner",
+//                "auctions.lot.ended-without-winner",
+//                "reviews.auction.approved",
+//                "reviews.auction.rejected",
+//                "auctions.lot.created-pending"
+//        }, groupId = "qqcoisa")
+//        public void consume(AuctionEvent event) {
+//            System.out.printf("""
+//                            [EVENT]
+//                            - Event class %s
+//                            - Auction ID: %s,
+//                            - Occurred At: %s
+//                            - Correlation ID: %s
+//                            %n""",
+//                    event.getClass().getSimpleName(),
+//                    event.auctionId(),
+//                    event.occurredAt(),
+//                    event.correlationId());
+//        }
 
 //    @KafkaListener(topics = "auctions.lot.created-pending")
 //    public void consumeAuctionCreatedPendingReview(AuctionCreatedPendingReview event) throws InterruptedException {
