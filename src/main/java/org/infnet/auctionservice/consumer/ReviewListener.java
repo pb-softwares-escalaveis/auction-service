@@ -10,15 +10,20 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ReviewListener {
-    private final AuctionLotService  lotService;
+    private final AuctionLotService lotService;
 
     @KafkaListener(topics = "${app.kafka-topics.review-approved}")
-    public void consume(AuctionReviewApproved event){
+    public void consume(AuctionReviewApproved event) {
         lotService.approveAuctionLot(event);
     }
 
     @KafkaListener(topics = "${app.kafka-topics.review-rejected}")
-    public void consume(AuctionReviewRejected event){
+    public void consume(AuctionReviewRejected event) {
         lotService.rejectAuctionLot(event);
+    }
+
+    @KafkaListener(topics = {"reviews.report.auction-approved"})
+    public void consumeReport(AuctionReviewApproved event) {
+        lotService.handleReportRemove(event);
     }
 }

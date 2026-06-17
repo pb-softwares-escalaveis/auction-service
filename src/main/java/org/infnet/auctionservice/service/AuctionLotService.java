@@ -88,7 +88,7 @@ public class AuctionLotService {
 
     @Transactional
     public Page<AuctionLotResponse> listAllUserLotsByStatus(UUID userId, AuctionStatus status, int page, int size) {
-        return  lotRepository.findBySellerIdAndOptionalStatus(userId, status, PageRequest.of(page, size))
+        return lotRepository.findBySellerIdAndOptionalStatus(userId, status, PageRequest.of(page, size))
                 .map(this::toResponse);
     }
 
@@ -130,7 +130,6 @@ public class AuctionLotService {
 
     @Transactional
     public void removeAuctionLot(UserHeaderContext ctx, Long lotId) {
-
         AuctionLot lot = lotRepository.findById(lotId)
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + lotId));
 
@@ -173,6 +172,12 @@ public class AuctionLotService {
                 lot.getTitle(),
                 lot.getMainImageUrl(),
                 lot.getCreatedAt(),
+                lot.getCategory(),
+                lot.getDescription(),
+                lot.getExpirationDate(),
+                lot.getInitialBidPrice(),
+                lot.getCurrentBidPrice(),
+                lot.getBuyNowPrice(),
                 Instant.now(),
                 UUID.randomUUID()
         ));
@@ -199,13 +204,14 @@ public class AuctionLotService {
                 lot.getTitle(),
                 lot.getMainImageUrl(),
                 Instant.now(),
+                lot.getCreatedAt(),
                 UUID.randomUUID()
         ));
     }
 
     @Transactional
     public AuctionLotResponse renewAuctionLot(Long lotId, UserHeaderContext ctx) {
-        if (!ctx.allowed()){
+        if (!ctx.allowed()) {
             throw new UserNotAllowedException("Usuário não autorizado.");
         }
 
@@ -266,7 +272,7 @@ public class AuctionLotService {
 
         bidRepository.invalidateAllBidsFromUser(event.userId());
 
-        while (true){
+        while (true) {
             List<AuctionLot> activeLots = lotRepository.findAllBySellerIdAndStatus(
                     event.userId(), AuctionStatus.ACTIVE, pageable);
 
@@ -278,11 +284,13 @@ public class AuctionLotService {
                 lot.setStatus(AuctionStatus.CANCELED);
                 log.info("Status do anúncio {} alterado para CANCELED.", lot.getId());
 
-                if (lot.getHighestBidderId() != null){
+                if (lot.getHighestBidderId() != null) {
                     eventPublisher.publishEvent(new AuctionCanceled(
                             UUID.randomUUID(),
                             lot.getId(),
                             lot.getHighestBidderId(),
+                            lot.getTitle(),
+                            lot.getMainImageUrl(),
                             Instant.now()
                     ));
                 }
@@ -292,7 +300,7 @@ public class AuctionLotService {
             lotRepository.flush();
         }
 
-        while (true){
+        while (true) {
             List<AuctionLot> winningLots = lotRepository.findAllByHighestBidderIdAndStatus(event.userId(), AuctionStatus.ACTIVE, pageable);
 
             if (winningLots.isEmpty()) {
@@ -316,6 +324,14 @@ public class AuctionLotService {
             }, () -> {
                 lot.setHighestBidderId(null);
                 lot.setCurrentBidPrice(lot.getInitialBidPrice());
+                eventPublisher.publishEvent(new AuctionBidReset(
+                        UUID.randomUUID(),
+                        lot.getId(),
+                        lot.getSellerId(),
+                        lot.getTitle(),
+                        lot.getMainImageUrl(),
+                        Instant.now()
+                ));
             }));
             lotRepository.saveAll(winningLots);
             lotRepository.flush();
@@ -336,6 +352,30 @@ public class AuctionLotService {
                 lot.getStatus(),
                 lot.getExpirationDate());
     }
+
+    @Transactional
+    public void handleReportRemove(AuctionReviewApproved event) {
+        AuctionLot lot = lotRepository.findById(event.auctionId())
+                .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + event.auctionId()));
+
+        lot.setStatus(AuctionStatus.CANCELED);
+        lotRepository.save(lot);
+
+        if (lot.getHighestBidderId() == null) {
+            log.info("[AuctionReviewApproved] O leilão não possui lances :(");
+            return;
+        }
+
+        eventPublisher.publishEvent(new AuctionCanceled(
+                UUID.randomUUID(),
+                lot.getId(),
+                lot.getHighestBidderId(),
+                lot.getTitle(),
+                lot.getMainImageUrl(),
+                Instant.now()
+        ));
+    }
+
 }
 
 

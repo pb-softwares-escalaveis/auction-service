@@ -11,7 +11,7 @@ spring:
       max-request-size: 10MB
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5435/postgres
     driver-class-name: org.postgresql.Driver
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
@@ -41,6 +41,9 @@ spring:
         spring.json.add.type.headers: false
         spring.json.use.type.headers: false
 
+server:
+  port: 8066
+
 app:
   kafka-topics:
     #publiher
@@ -53,6 +56,7 @@ app:
       auction-removed: "auctions.lot.removed"
       auction-renewed: "auctions.lot.renewed"
       auction-canceled: "auctions.lot.canceled"
+      auction-bid-reset: "auctions.bid.reset"
       bid-highest-invalidated: "auctions.bid.new-highest-assigned"
       bid-placed: "auctions.bid.placed"
       #consumer

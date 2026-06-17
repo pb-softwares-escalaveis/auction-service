@@ -5,10 +5,10 @@ import org.infnet.auctionservice.events.AuctionEvent;
 import java.time.Instant;
 import java.util.UUID;
 
-public record AuctionCanceled(
+public record AuctionBidReset(
         UUID correlationId,
         Long auctionId,
-        UUID highestBidderId,
+        UUID sellerId,
         String auctionTitle,
         String auctionThumb,
         Instant occurredAt
