@@ -41,6 +41,9 @@ spring:
         spring.json.add.type.headers: false
         spring.json.use.type.headers: false
 
+server:
+  port: 8066
+
 app:
   kafka-topics:
     #publiher
@@ -53,6 +56,7 @@ app:
       auction-removed: "auctions.lot.removed"
       auction-renewed: "auctions.lot.renewed"
       auction-canceled: "auctions.lot.canceled"
+      auction-bid-reset: "auctions.bid.reset"
       bid-highest-invalidated: "auctions.bid.new-highest-assigned"
       bid-placed: "auctions.bid.placed"
       #consumer

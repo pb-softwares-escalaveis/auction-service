@@ -130,7 +130,6 @@ public class AuctionLotService {
 
     @Transactional
     public void removeAuctionLot(UserHeaderContext ctx, Long lotId) {
-
         AuctionLot lot = lotRepository.findById(lotId)
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + lotId));
 
@@ -173,6 +172,12 @@ public class AuctionLotService {
                 lot.getTitle(),
                 lot.getMainImageUrl(),
                 lot.getCreatedAt(),
+                lot.getCategory(),
+                lot.getDescription(),
+                lot.getExpirationDate(),
+                lot.getInitialBidPrice(),
+                lot.getCurrentBidPrice(),
+                lot.getBuyNowPrice(),
                 Instant.now(),
                 UUID.randomUUID()
         ));
@@ -319,6 +324,14 @@ public class AuctionLotService {
             }, () -> {
                 lot.setHighestBidderId(null);
                 lot.setCurrentBidPrice(lot.getInitialBidPrice());
+                eventPublisher.publishEvent(new AuctionBidReset(
+                        UUID.randomUUID(),
+                        lot.getId(),
+                        lot.getSellerId(),
+                        lot.getTitle(),
+                        lot.getMainImageUrl(),
+                        Instant.now()
+                ));
             }));
             lotRepository.saveAll(winningLots);
             lotRepository.flush();
