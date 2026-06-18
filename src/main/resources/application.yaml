@@ -1,9 +1,6 @@
 spring:
   application:
-    name: auctionService
-
-  config:
-    import: "optional:file:.env[.properties]"
+    name: auction-service
 
   servlet:
     multipart:
@@ -11,23 +8,23 @@ spring:
       max-request-size: 10MB
 
   datasource:
-    url: jdbc:postgresql://localhost:5435/postgres
+    url: jdbc:postgresql://auction-service-postgres:5432/postgres
     driver-class-name: org.postgresql.Driver
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    username: ${AUCTION_SERVICE_POSTGRES_USER}
+    password: ${AUCTION_SERVICE_POSTGRES_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
 
   s3:
-    endpoint: ${S3_ENDPOINT}
-    bucket-name: ${S3_BUCKET_NAME}
+    endpoint: ${AUCTION_SERVICE_S3_ENDPOINT}
+    bucket-name: ${AUCTION_SERVICE_S3_BUCKET_NAME}
     access-key: ${S3_ACCESS_KEY}
     secret-key: ${S3_SECRET_KEY}
-    region: ${S3_REGION}
+    region: us-region-fake
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVER}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -41,8 +38,21 @@ spring:
         spring.json.add.type.headers: false
         spring.json.use.type.headers: false
 
-server:
-  port: 8066
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+      base-path: /actuator
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL}
+    fetch-registry: false
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.uuid}}
+    prefer-ip-address: true
 
 app:
   kafka-topics:
