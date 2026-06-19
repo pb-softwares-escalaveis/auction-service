@@ -23,7 +23,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/auctions")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class AuctionLotController {
     private final AuctionLotService lotService;
     private final AuctionLotFacade lotFacade;

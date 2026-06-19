@@ -14,7 +14,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class BidController {
     private final BidService bidService;
 
