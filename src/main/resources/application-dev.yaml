@@ -1,0 +1,81 @@
+spring:
+  application:
+    name: auction-service
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+  datasource:
+    url: jdbc:postgresql://localhost:5435/postgres
+    driver-class-name: org.postgresql.Driver
+    username: ${AUCTION_SERVICE_POSTGRES_USER}
+    password: ${AUCTION_SERVICE_POSTGRES_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  s3:
+    endpoint: ${AUCTION_SERVICE_S3_ENDPOINT}
+    bucket-name: ${AUCTION_SERVICE_S3_BUCKET_NAME}
+    access-key: ${S3_ACCESS_KEY}
+    secret-key: ${S3_SECRET_KEY}
+    region: us-region-fake
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: auction-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        spring.json.trusted.packages: org.infnet.auctionservice.*
+        spring.json.add.type.headers: false
+        spring.json.use.type.headers: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+      base-path: /actuator
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: false
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.uuid}}
+    prefer-ip-address: true
+
+app:
+  kafka-topics:
+    #publiher
+      auction-created-pending: "auctions.lot.created-pending"
+      auction-approved: "auctions.lot.approved"
+      auction-rejected: "auctions.lot.rejected"
+      auction-ended-without-winner: "auctions.lot.ended-without-winner"
+      auction-ended-with-winner: "auctions.lot.ended-with-winner"
+      auction-clicked: "auctions.lot.clicked"
+      auction-removed: "auctions.lot.removed"
+      auction-renewed: "auctions.lot.renewed"
+      auction-canceled: "auctions.lot.canceled"
+      auction-bid-reset: "auctions.bid.reset"
+      bid-highest-invalidated: "auctions.bid.new-highest-assigned"
+      bid-placed: "auctions.bid.placed"
+      #consumer
+      review-rejected: "reviews.auction.rejected"
+      review-approved: "reviews.auction.approved"
+      transaction-closed: "transactions.status.closed"
+      user-deleted: "users.account.deleted"
+      user-suspended: "users.account.suspended"
+      user-banned: "users.account.banned"
+      user-created: "users.account.created"
+
+

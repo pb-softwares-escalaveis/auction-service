@@ -14,17 +14,22 @@
                 %logger{36} - %msg%n
             </pattern>
         </encoder>
+        <!--        <encoder>-->
+        <!--            <pattern>-->
+        <!--                %d{yyyy-MM-dd HH:mm:ss.SSS} %5p [${APP_NAME},%X{traceId:-},%X{spanId:-}] [%thread] %logger{36} - %msg%n-->
+        <!--            </pattern>-->
+        <!--        </encoder>-->
     </appender>
 
     <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>elk-logstash:5000</destination>
+        <destination>${LOGSTASH_HOST:-localhost}:5000</destination>
 
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <customFields>{"service":"${APP_NAME}"}</customFields>
         </encoder>
     </appender>
 
-    <springProfile name="dev, default">
+    <springProfile name="dev">
         <logger name="org.apache.kafka" level="WARN"/>
         <logger name="org.springframework.kafka" level="WARN"/>
         <logger name="org.apache.kafka.clients.producer.ProducerConfig" level="ERROR"/>

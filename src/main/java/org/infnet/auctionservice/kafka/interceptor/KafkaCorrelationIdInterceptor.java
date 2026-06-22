@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.infnet.auctionservice.events.AuctionEvent;
 import org.infnet.auctionservice.utils.CorrelationIdUtil;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.MDC;
 import org.springframework.kafka.listener.RecordInterceptor;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,7 @@ public class KafkaCorrelationIdInterceptor implements RecordInterceptor<Object, 
     private static final String CORRELATION_ID_MDC = "correlationId";
 
     @Override
-    public ConsumerRecord<Object, Object> intercept(ConsumerRecord<Object, Object> record, Consumer<Object, Object> consumer) {
+    public ConsumerRecord<Object, Object> intercept(ConsumerRecord<Object, Object> record, @NonNull Consumer<Object, Object> consumer) {
         String correlationId = null;
 
         if (record.value() instanceof String jsonPayload) {
@@ -54,12 +55,12 @@ public class KafkaCorrelationIdInterceptor implements RecordInterceptor<Object, 
     }
 
     @Override
-    public void success(ConsumerRecord<Object, Object> record, Consumer<Object, Object> consumer) {
+    public void success(@NonNull ConsumerRecord<Object, Object> record, @NonNull Consumer<Object, Object> consumer) {
         CorrelationIdUtil.clear();
     }
 
     @Override
-    public void failure(ConsumerRecord<Object, Object> record, Exception exception, Consumer<Object, Object> consumer) {
+    public void failure(@NonNull ConsumerRecord<Object, Object> record, @NonNull Exception exception, @NonNull Consumer<Object, Object> consumer) {
         CorrelationIdUtil.clear();
     }
 }

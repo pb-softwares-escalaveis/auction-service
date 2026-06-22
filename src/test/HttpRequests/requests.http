@@ -1,7 +1,7 @@
 ### ==========================================
 ### VARIÁVEIS GLOBAIS E SIMULAÇÃO DO GATEWAY
 ### ==========================================
-@baseUrl = http://localhost:8066
+@baseUrl = http://localhost:8080
 
 # 👤 User 1 - Vendedor Principal (Ativo)
 @user1_id = bddfe29d-3bd1-47e5-bf4b-03a50c65d534

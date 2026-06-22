@@ -2,7 +2,7 @@ name: kafka-connect-script-stack
 services:
   auction-service:
     image: pedrovncs/auction-service:latest
-    container_name: auction-service-app
+    container_name: auction-service-app1
     ports:
       - "${AUCTION_SERVICE_PORT:-8080}:8080"
     environment:
@@ -18,8 +18,9 @@ services:
 
       AUCTION_SERVICE_PORT: ${AUCTION_SERVICE_PORT}
 
-      KAFKA_BOOTSTRAP_SERVER: ${KAFKA_BOOTSTRAP_SERVER}
-      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      KAFKA_BOOTSTRAP_SERVER: kafka:29092
+      EUREKA_SERVER_URL: http://eureka-server:8761/eureka
+      LOGSTASH_HOST: elk-logstash
     depends_on:
       auction-postgres:
         condition: service_healthy
@@ -29,7 +30,7 @@ services:
       - leilao-network
 
   eureka-server:
-    container_name: eureka-server
+    container_name: eureka-server1
     image: steeltoeoss/eureka-server:latest
     ports:
       - "8761:8761"
@@ -45,9 +46,9 @@ services:
 
   kafka:
     image: apache/kafka:4.3.0
-    container_name: leilao-kafka
+    container_name: leilao-kafka1
     ports:
-      - "${KAFKA_PORT}:9092"
+      - "9092:9092"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
@@ -80,19 +81,23 @@ services:
 
   kafka-init:
     image: apache/kafka:4.3.0
+    container_name: kafka-init
+    networks:
+      - leilao-network
+    restart: on-failure
     depends_on:
       kafka:
+        condition: service_healthy
+      eureka-server:
         condition: service_healthy
     volumes:
       - ./config/topics.txt:/config/topics.txt
       - ./config/create-topics.sh:/config/create-topics.sh
-    networks:
-      - leilao-network
-    entrypoint: ["/bin/sh", "/config/create-topics.sh"]
+    entrypoint: [ "/bin/sh", "/config/create-topics.sh" ]
 
   auction-postgres:
     image: postgres:15-alpine
-    container_name: auction-service-postgres
+    container_name: auction-service-postgres1
     environment:
       POSTGRES_USER: ${AUCTION_SERVICE_POSTGRES_USER}
       POSTGRES_PASSWORD: ${AUCTION_SERVICE_POSTGRES_PASSWORD}
@@ -119,11 +124,11 @@ services:
 
   kafka-connect:
     image: debezium/connect:2.7.3.Final
-    container_name: auction-kafka-connect
+    container_name: auction-kafka-connect1
     ports:
       - "${KAFKA_CONNECT_PORT}:8083"
     environment:
-      BOOTSTRAP_SERVERS: kafka:29092
+      BOOTSTRAP_SERVERS: kafka:9092
       GROUP_ID: auction-connect-cluster
       CONFIG_STORAGE_TOPIC: auction_connect_configs
       OFFSET_STORAGE_TOPIC: auction_connect_offsets
@@ -152,7 +157,7 @@ services:
 
   kafka-connect-init:
     image: curlimages/curl:latest
-    container_name: auction-kafka-connect-init
+    container_name: auction-kafka-connect-init1
     depends_on:
       kafka-connect:
         condition: service_healthy
