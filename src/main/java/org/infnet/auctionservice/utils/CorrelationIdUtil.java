@@ -46,7 +46,7 @@ public class CorrelationIdUtil {
                 return request.getHeader(CORRELATION_ID_HEADER);
             }
         } catch (Exception e) {
-            log.warn("Não foi possível obter o Correlation ID do contexto da requisição: {}", e.getMessage(), e);
+            log.warn("[CORRELATION ID UTIL] Não foi possível obter o Correlation ID do contexto da requisição. error={}", e.getMessage(), e);
         }
         return null;
     }

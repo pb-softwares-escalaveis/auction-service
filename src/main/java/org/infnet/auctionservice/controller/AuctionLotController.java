@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.infnet.auctionservice.dto.AuctionLotWithSellerInfo;
 import org.infnet.auctionservice.dto.UserHeaderContext;
 import org.infnet.auctionservice.enums.AuctionStatus;
@@ -23,6 +24,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/auctions")
 @RequiredArgsConstructor
+@Slf4j
 public class AuctionLotController {
     private final AuctionLotService lotService;
     private final AuctionLotFacade lotFacade;
@@ -63,6 +65,7 @@ public class AuctionLotController {
             @RequestHeader("X-User-Allowed") boolean isAllowed
 
     ){
+        log.info("[AUCTION LOT CONTROLLER] Recebida requisição para remover anúncio. auctionId={} userId={}", lotId, userId);
         var userCtx = new UserHeaderContext(userId, userName, userEmail, isAllowed);
         lotService.removeAuctionLot(userCtx, lotId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -77,6 +80,7 @@ public class AuctionLotController {
             @Valid@RequestPart("data") AuctionLotRequest request,
             @NotNull@RequestPart("image") MultipartFile image
     ) throws Exception {
+        log.info("[AUCTION LOT CONTROLLER] Recebida requisição para criar anúncio. userId={}", userId);
         var ctx = new UserHeaderContext(userId, userName, userEmail, isAllowed);
         return ResponseEntity.status(HttpStatus.CREATED).body(lotFacade.createAuctionLot(ctx, request, image));
     }
@@ -89,6 +93,7 @@ public class AuctionLotController {
             @RequestHeader("X-User-Allowed") boolean isAllowed,
             @PathParam("id") Long lotId
     ){
+        log.info("[AUCTION LOT CONTROLLER] Recebida requisição para renovar anúncio. auctionId={} userId={}", lotId, userId);
         var ctx = new UserHeaderContext(userId, userName, userEmail, isAllowed);
 
         return ResponseEntity.status(HttpStatus.OK).body(lotService.renewAuctionLot(lotId, ctx));

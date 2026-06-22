@@ -1,8 +1,10 @@
 package org.infnet.auctionservice.service;
 
+import org.infnet.auctionservice.utils.CorrelationIdUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.infnet.auctionservice.domain.AuctionLot;
 import org.infnet.auctionservice.enums.AuctionStatus;
 import org.infnet.auctionservice.events.lot.AuctionEndedWithWinner;
@@ -16,6 +18,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuctionLotExpirationService {
     private final AuctionLotRepository lotRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -33,6 +36,8 @@ public class AuctionLotExpirationService {
             lot.setStatus(AuctionStatus.EXPIRED);
             lotRepository.save(lot);
 
+            log.info("[AUCTION LOT EXPIRATION SERVICE] Processamento de expiração concluído. auctionId={} resultado=SEM_VENCEDOR", lotId);
+
             eventPublisher.publishEvent(
                     new AuctionEndedWithoutWinner(
                             lot.getId(),
@@ -40,12 +45,14 @@ public class AuctionLotExpirationService {
                             lot.getTitle(),
                             lot.getMainImageUrl(),
                             Instant.now(),
-                            UUID.randomUUID()
+                            CorrelationIdUtil.getCorrelationIdAsUUID()
                     )
             );
         } else {
             lot.setStatus(AuctionStatus.SOLD);
             lotRepository.save(lot);
+
+            log.info("[AUCTION LOT EXPIRATION SERVICE] Processamento de expiração concluído. auctionId={} resultado=VENDIDO highestBidderId={}", lotId, lot.getHighestBidderId());
 
             eventPublisher.publishEvent(new AuctionEndedWithWinner(
                     lot.getId(),
@@ -55,7 +62,7 @@ public class AuctionLotExpirationService {
                     lot.getMainImageUrl(),
                     lot.getCurrentBidPrice(),
                     Instant.now(),
-                    UUID.randomUUID()
+                    CorrelationIdUtil.getCorrelationIdAsUUID()
             ));
         }
     }

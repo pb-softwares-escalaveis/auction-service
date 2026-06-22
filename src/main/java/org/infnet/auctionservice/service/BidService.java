@@ -1,5 +1,6 @@
 package org.infnet.auctionservice.service;
 
+import org.infnet.auctionservice.utils.CorrelationIdUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +30,7 @@ public class BidService {
 
     @Transactional
     public void placeBid(Long lotId, UserHeaderContext bidder, BidRequest request)  {
+        log.info("[BID SERVICE] Iniciando processamento de lance. auctionId={} userId={} amount={}", lotId, bidder.id(), request.bidAmount());
         AuctionLot lot = lotRepository.findLockedById(lotId)
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + lotId));
 
@@ -44,6 +45,8 @@ public class BidService {
         bidRepository.save(bid);
         lotRepository.save(lot);
 
+        log.info("[BID SERVICE] Novo lance registrado com sucesso. auctionId={} bidId={} amount={}", lot.getId(), bid.getId(), request.bidAmount());
+
         if (lot.getStatus() == AuctionStatus.SOLD){
             eventPublisher.publishEvent(new AuctionEndedWithWinner(
                     lot.getId(),
@@ -53,7 +56,7 @@ public class BidService {
                     lot.getMainImageUrl(),
                     lot.getCurrentBidPrice(),
                     Instant.now(),
-                    UUID.randomUUID()
+                    CorrelationIdUtil.getCorrelationIdAsUUID()
             ));
         } else {
             Instant now = Instant.now();
@@ -69,7 +72,7 @@ public class BidService {
                     bid.getAmount(),
                     now,
                     now.toEpochMilli(),
-                    UUID.randomUUID()
+                    CorrelationIdUtil.getCorrelationIdAsUUID()
             ));
         }
     }

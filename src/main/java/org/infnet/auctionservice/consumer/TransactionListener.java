@@ -15,7 +15,7 @@ public class TransactionListener {
 
     @KafkaListener(topics = "${app.kafka-topics.transaction-closed}")
     public void consumePaymentFail(TransactionClosed event){
-        log.info("Recebido evento de falha na transação {}, relacionada ao anúncio: {}",event.transactionId(), event.auctionId());
+        log.info("[TRANSACTION LISTENER] Evento consumido: falha na transação. transactionId={} auctionId={}",event.transactionId(), event.auctionId());
         lotService.handleTransactionFailure(event);
     }
 }

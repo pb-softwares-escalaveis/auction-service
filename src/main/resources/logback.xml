@@ -24,7 +24,7 @@
         </encoder>
     </appender>
 
-    <springProfile name="dev">
+    <springProfile name="dev, default">
         <logger name="org.apache.kafka" level="WARN"/>
         <logger name="org.springframework.kafka" level="WARN"/>
         <logger name="org.apache.kafka.clients.producer.ProducerConfig" level="ERROR"/>

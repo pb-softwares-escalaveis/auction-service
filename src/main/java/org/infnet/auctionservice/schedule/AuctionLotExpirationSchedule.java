@@ -8,6 +8,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import org.infnet.auctionservice.utils.CorrelationIdUtil;
+import org.slf4j.MDC;
+
 import java.time.Instant;
 import java.util.List;
 
@@ -31,18 +34,24 @@ public class AuctionLotExpirationSchedule {
 
             if (ids.isEmpty()) {
                 if (totalProcessed > 0) {
-                    log.info("Schedule concluído: {} anúncios expirados foram processados.", totalProcessed);
+                    log.info("[AUCTION LOT EXPIRATION SCHEDULE] Schedule concluído. processedCount={}", totalProcessed);
+                } else {
+                    log.info("[AUCTION LOT EXPIRATION SCHEDULE] Schedule concluído. processedCount=0");
                 }
-                log.info("Schedule concluído, nenhum anúncio expirado encontrado.");
                 break;
             }
 
             for (Long id : ids) {
                 try {
+                    String correlationId = CorrelationIdUtil.generateCorrelationId();
+                    MDC.put("correlationId", correlationId);
+                    
                     expirationService.processEnd(id);
                     totalProcessed++;
                 } catch (Exception e) {
-                    log.error("Erro ao processar anúncio expirado: {}", id, e);
+                    log.error("[AUCTION LOT EXPIRATION SCHEDULE] Erro ao processar anúncio expirado. auctionId={}", id, e);
+                } finally {
+                    CorrelationIdUtil.clear();
                 }
             }
         }

@@ -38,9 +38,9 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
 
             if (correlationId == null || correlationId.isEmpty()) {
                 correlationId = CorrelationIdUtil.generateCorrelationId();
-                log.debug("Correlation ID gerado internamente: {}", correlationId);
+                log.debug("[CORRELATION ID FILTER] Correlation ID gerado internamente. correlationId={}", correlationId);
             } else {
-                log.debug("Correlation ID recebido do Gateway: {}", correlationId);
+                log.debug("[CORRELATION ID FILTER] Correlation ID recebido do Gateway. correlationId={}", correlationId);
             }
 
             MDC.put("correlationId", correlationId);
@@ -50,7 +50,7 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } finally {
-            MDC.remove("correlationId");
+            CorrelationIdUtil.clear();
         }
     }
 }
