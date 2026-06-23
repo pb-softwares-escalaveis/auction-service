@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import org.infnet.auctionservice.utils.CorrelationIdUtil;
 import org.slf4j.MDC;
+import io.micrometer.core.annotation.Timed;
 
 import java.time.Instant;
 import java.util.List;
@@ -22,6 +23,7 @@ public class AuctionLotExpirationSchedule {
     private final AuctionLotExpirationService expirationService;
 
     @Scheduled(cron = "0 */1 * * * *")
+    @Timed(value = "auction.expiration.job.time", description = "Tempo de execução do encerramento de leilões")
     public void executeExpire() {
         int BATCH_SIZE = 100;
         int totalProcessed = 0;

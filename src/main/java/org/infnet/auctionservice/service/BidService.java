@@ -1,6 +1,7 @@
 package org.infnet.auctionservice.service;
 
 import org.infnet.auctionservice.utils.CorrelationIdUtil;
+import org.infnet.auctionservice.metrics.AuctionMetricsService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class BidService {
     private final AuctionLotRepository lotRepository;
     private final BidRepository bidRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final AuctionMetricsService metricsService;
 
     @Transactional
     public void placeBid(Long lotId, UserHeaderContext bidder, BidRequest request)  {
@@ -35,6 +37,7 @@ public class BidService {
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + lotId));
 
         if (!bidder.allowed()){
+            metricsService.recordInvalidBid();
             throw new UserNotAllowedException("Usuário não autorizado.");
         }
 
@@ -45,6 +48,7 @@ public class BidService {
         bidRepository.save(bid);
         lotRepository.save(lot);
 
+        metricsService.recordValidBid();
         log.info("[BID SERVICE] Novo lance registrado com sucesso. auctionId={} bidId={} amount={}", lot.getId(), bid.getId(), request.bidAmount());
 
         if (lot.getStatus() == AuctionStatus.SOLD){
