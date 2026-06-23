@@ -2,7 +2,6 @@ package org.infnet.auctionservice.metrics;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
-import org.infnet.auctionservice.repository.AuctionLotRepository;
 import org.springframework.stereotype.Service;
 
 @Service
