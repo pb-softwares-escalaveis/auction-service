@@ -19,18 +19,21 @@ public class UserListener {
     @KafkaListener(topics = {"${app.kafka-topics.user-suspended}"} )
     public void consumeSuspended(UserStatusChanged event){
         log.info("Recebido evento de SUSPENSÃO na conta do usuário: {}",event.userId());
+        projectionService.updateStatus(event.userId(), "SUSPENDED");
         lotService.processUserPenalty(event);
     }
 
     @KafkaListener(topics = {"${app.kafka-topics.user-banned}"} )
     public void consumeBanned(UserStatusChanged event){
         log.info("Recebido evento de BANIMENTO na conta do usuário: {}",event.userId());
+        projectionService.updateStatus(event.userId(), "BANNED");
         lotService.processUserPenalty(event);
     }
 
     @KafkaListener(topics = {"${app.kafka-topics.user-deleted}"} )
     public void consumeDeleted(UserStatusChanged event){
         log.info("Recebido evento de DELEÇÃO na conta do usuário: {}",event.userId());
+        projectionService.updateStatus(event.userId(), "DELETED");
         lotService.processUserPenalty(event);
     }
 

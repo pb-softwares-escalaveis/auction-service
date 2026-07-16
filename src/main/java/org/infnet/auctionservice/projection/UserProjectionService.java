@@ -31,4 +31,12 @@ public class UserProjectionService {
         }
     }
 
+    public void updateStatus(java.util.UUID userId, String status) {
+        projectionRepository.findById(userId).ifPresent(projection -> {
+            projection.setStatus(status);
+            projectionRepository.save(projection);
+            log.info("Status do UserProjection {} atualizado para {}", userId, status);
+        });
+    }
+
 }

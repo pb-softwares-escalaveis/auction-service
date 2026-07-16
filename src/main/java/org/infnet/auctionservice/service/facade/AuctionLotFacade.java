@@ -18,6 +18,7 @@ import java.io.IOException;
 public class AuctionLotFacade {
     private final AuctionLotService auctionLotService;
     private final BucketStorageService bucketService;
+    private final org.infnet.auctionservice.projection.UserProjectionRepository userProjectionRepository;
 
     public AuctionLotResponse createAuctionLot(UserHeaderContext user, AuctionLotRequest dto, MultipartFile image) throws Exception  {
 
@@ -28,6 +29,12 @@ public class AuctionLotFacade {
         if (!user.allowed()) {
             throw new UserNotAllowedException("Usuário não possui permissão para criar anúncios.");
         }
+
+        userProjectionRepository.findById(user.id()).ifPresent(projection -> {
+            if (!"ACTIVE".equals(projection.getStatus())) {
+                throw new UserNotAllowedException("Usuário não autorizado a criar anúncios. Status atual: " + projection.getStatus());
+            }
+        });
 
         validateImage(image);
 

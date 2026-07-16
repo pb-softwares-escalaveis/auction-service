@@ -25,4 +25,5 @@ public class UserProjection {
     private String state;
     private String city;
     private Instant createdAt;
+    private String status = "ACTIVE";
 }
