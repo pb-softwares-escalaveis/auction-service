@@ -43,4 +43,11 @@ public class UserListener {
         projectionService.saveProjection(event);
     }
 
+    @KafkaListener(topics = {"${app.kafka-topics.user-restored}"})
+    public void consumeRestored(UserStatusChanged event){
+        log.info("Recebido evento de RESTAURAÇÃO do usuário: {}",event.userId());
+        projectionService.updateStatus(event.userId(), "ACTIVE");
+        lotService.processUserPenalty(event);
+    }
+
 }

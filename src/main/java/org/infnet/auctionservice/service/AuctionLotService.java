@@ -120,6 +120,7 @@ public class AuctionLotService {
                 user.email(),
                 lot.getTitle(),
                 lot.getDescription(),
+                lot.getCategory().toString(),
                 Instant.now(),
                 lot.getMainImageUrl(),
                 UUID.randomUUID()
