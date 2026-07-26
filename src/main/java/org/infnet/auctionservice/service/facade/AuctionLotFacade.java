@@ -26,15 +26,13 @@ public class AuctionLotFacade {
             throw new IllegalArgumentException("A imagem do anúncio é obrigatória.");
         }
 
-        if (!user.allowed()) {
+        boolean isAllowed = userProjectionRepository.findById(user.id())
+                .map(projection -> "ACTIVE".equals(projection.getStatus()))
+                .orElse(user.allowed());
+
+        if (!isAllowed) {
             throw new UserNotAllowedException("Usuário não possui permissão para criar anúncios.");
         }
-
-        userProjectionRepository.findById(user.id()).ifPresent(projection -> {
-            if (!"ACTIVE".equals(projection.getStatus())) {
-                throw new UserNotAllowedException("Usuário não autorizado a criar anúncios. Status atual: " + projection.getStatus());
-            }
-        });
 
         validateImage(image);
 

@@ -14,6 +14,7 @@ import org.infnet.auctionservice.events.lot.AuctionEndedWithWinner;
 import org.infnet.auctionservice.exception.UserNotAllowedException;
 import org.infnet.auctionservice.repository.AuctionLotRepository;
 import org.infnet.auctionservice.repository.BidRepository;
+import org.infnet.auctionservice.projection.UserProjectionRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -27,13 +28,18 @@ public class BidService {
     private final AuctionLotRepository lotRepository;
     private final BidRepository bidRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserProjectionRepository userProjectionRepository;
 
     @Transactional
     public void placeBid(Long lotId, UserHeaderContext bidder, BidRequest request)  {
         AuctionLot lot = lotRepository.findLockedById(lotId)
                 .orElseThrow(() -> new EntityNotFoundException("Anúncio não encontrado com id: " + lotId));
 
-        if (!bidder.allowed()){
+        boolean isAllowed = userProjectionRepository.findById(bidder.id())
+                .map(projection -> "ACTIVE".equals(projection.getStatus()))
+                .orElse(bidder.allowed());
+
+        if (!isAllowed){
             throw new UserNotAllowedException("Usuário não autorizado.");
         }
 

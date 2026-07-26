@@ -212,7 +212,11 @@ public class AuctionLotService {
 
     @Transactional
     public AuctionLotResponse renewAuctionLot(Long lotId, UserHeaderContext ctx) {
-        if (!ctx.allowed()) {
+        boolean isAllowed = projectionRepository.findById(ctx.id())
+                .map(projection -> "ACTIVE".equals(projection.getStatus()))
+                .orElse(ctx.allowed());
+
+        if (!isAllowed) {
             throw new UserNotAllowedException("Usuário não autorizado.");
         }
 
